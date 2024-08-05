@@ -107,7 +107,6 @@ fn part1(input: &str) {
     println!("part1: {}", rounds.iter().map(|r| r.score).sum::<u64>());
 }
 
-#[allow(unused)]
 fn part2(input: &str) {
     let mut rounds: Vec<Round> = Vec::new();
 
@@ -124,7 +123,7 @@ fn part2(input: &str) {
 }
 
 pub fn run() -> io::Result<()> {
-    let input = fs::read_to_string("2022/inputs/day2.txt")?;
+    let input = fs::read_to_string("inputs/2022/day2.txt")?;
 
     part1(&input);
     part2(&input);

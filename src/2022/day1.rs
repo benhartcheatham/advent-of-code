@@ -48,7 +48,7 @@ fn part2(input: &str) {
 }
 
 pub fn run() -> io::Result<()> {
-    let input = fs::read_to_string("2022/inputs/day1.txt")?;
+    let input = fs::read_to_string("inputs/2022/day1.txt")?;
 
     part1(&input);
     part2(&input);

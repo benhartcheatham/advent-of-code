@@ -1,8 +1,9 @@
 use std::io;
 mod day1;
 mod day2;
+mod day3;
 
-static DAYS: [fn() -> io::Result<()>; 2] = [day1::run, day2::run];
+static DAYS: [fn() -> io::Result<()>; 3] = [day1::run, day2::run, day3::run];
 
 fn run_all() {
     for i in 0..DAYS.len() {

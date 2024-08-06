@@ -61,7 +61,7 @@ fn run_all() {
 }
 
 fn run_day(day: usize) {
-    println!("day{}:", day);
+    println!("day{}:", day + 1);
     let result = DAYS[day]();
 
     match result {

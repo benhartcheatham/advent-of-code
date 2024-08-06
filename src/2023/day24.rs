@@ -1,4 +1,5 @@
 use nalgebra::{matrix, vector, Matrix3, Matrix6, Vector3};
+use std::fs;
 use std::io;
 
 #[derive(Debug)]
@@ -21,9 +22,9 @@ impl Hailstone {
 }
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day24.txt");
+    let input = fs::read_to_string("inputs/2023/day24.txt")?;
 
-    println!("solution: {}", solution(input));
+    println!("solution: {}", solution(&input));
 
     Ok(())
 }

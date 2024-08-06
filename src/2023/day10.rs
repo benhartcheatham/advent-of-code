@@ -1,11 +1,12 @@
+use std::fs;
 use std::io;
 
 use crate::year23::pipe::*;
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day10.txt");
+    let input = fs::read_to_string("inputs/2023/day10.txt")?;
 
-    println!("solution: {}", solution(input));
+    println!("solution: {}", solution(&input));
     Ok(())
 }
 

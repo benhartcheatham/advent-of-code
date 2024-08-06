@@ -1,3 +1,4 @@
+use std::fs;
 use std::io;
 use std::thread;
 
@@ -182,9 +183,9 @@ fn print_tiles(tiles: &Vec<Vec<Tile>>) {
 }
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day16.txt");
+    let input = fs::read_to_string("inputs/2023/day16.txt")?;
 
-    println!("solution: {}", solution(input));
+    println!("solution: {}", solution(&input));
 
     Ok(())
 }

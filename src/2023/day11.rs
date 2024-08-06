@@ -1,3 +1,4 @@
+use std::fs;
 use std::collections::HashSet;
 use std::fmt::Display;
 use std::io;
@@ -35,9 +36,9 @@ impl Display for Galaxy {
 }
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day11.txt");
+    let input = fs::read_to_string("inputs/2023/day11.txt")?;
 
-    println!("solution: {}", solution(input));
+    println!("solution: {}", solution(&input));
     Ok(())
 }
 

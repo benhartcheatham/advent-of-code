@@ -1,4 +1,4 @@
-use std::{fmt::Display, io};
+use std::{fmt::Display, io, fs};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 struct Node {
@@ -136,9 +136,9 @@ impl Display for Graph {
 }
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day25.txt");
+    let input = fs::read_to_string("inputs/2023/day25.txt")?;
 
-    println!("solution: {}", solution(input));
+    println!("solution: {}", solution(&input));
 
     Ok(())
 }

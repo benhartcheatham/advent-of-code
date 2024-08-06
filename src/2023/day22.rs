@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet, VecDeque};
+use std::fs;
 use std::io;
 use std::ops::RangeInclusive;
 
@@ -100,9 +101,9 @@ impl Ord for Block {
 }
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day22.txt");
+    let input = fs::read_to_string("inputs/2023/day22.txt")?;
 
-    println!("solution: {}", solution(input));
+    println!("solution: {}", solution(&input));
 
     Ok(())
 }

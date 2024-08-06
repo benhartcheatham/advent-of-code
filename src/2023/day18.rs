@@ -1,4 +1,5 @@
 use iter_tools::*;
+use std::fs;
 use std::io;
 
 enum Direction {
@@ -32,9 +33,9 @@ impl Point {
 }
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day18.txt");
+    let input = fs::read_to_string("inputs/2023/day18.txt")?;
 
-    println!("solution: {}", solution(input));
+    println!("solution: {}", solution(&input));
 
     Ok(())
 }

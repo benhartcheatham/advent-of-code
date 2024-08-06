@@ -1,4 +1,5 @@
 use std::collections::{HashSet, VecDeque};
+use std::fs;
 use std::io;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -24,9 +25,9 @@ impl Tile {
 }
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day21.txt");
+    let input = fs::read_to_string("inputs/2023/day21.txt")?;
 
-    println!("solution: {}", solution(input, 26501365));
+    println!("solution: {}", solution(&input, 26501365));
 
     Ok(())
 }

@@ -1,10 +1,11 @@
+use std::fs;
 use std::collections::HashMap;
 use std::io;
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day15.txt");
+    let input = fs::read_to_string("inputs/2023/day15.txt")?;
     
-    println!("solution: {}", solution(input));
+    println!("solution: {}", solution(&input));
 
     Ok(())
 }

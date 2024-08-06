@@ -1,4 +1,5 @@
 use std::collections::{BinaryHeap, HashMap, HashSet};
+use std::fs;
 use std::hash::Hash;
 use std::io;
 
@@ -204,9 +205,9 @@ impl Vertex {
 }
 
 pub fn run() -> Result<(), io::Error> {
-    let input = include_str!("../../inputs/2023/day17.txt");
+    let input = fs::read_to_string("inputs/2023/day17.txt")?;
 
-    println!("solution: {}", solution(input));
+    println!("solution: {}", solution(&input));
 
     Ok(())
 }

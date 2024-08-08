@@ -5,6 +5,7 @@ use std::io;
 mod year22;
 #[path = "2023/mod.rs"]
 mod year23;
+mod utils;
 
 fn main() -> io::Result<()> {
     let year = args().nth(1).unwrap_or(String::from("2022"));

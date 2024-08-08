@@ -19,9 +19,9 @@ impl From<&str> for Shapes {
     }
 }
 
-impl Into<u64> for Shapes {
-    fn into(self) -> u64 {
-        match self {
+impl From<Shapes> for u64 {
+    fn from(value: Shapes) -> Self {
+        match value {
             Shapes::Rock => 1,
             Shapes::Paper => 2,
             Shapes::Scissors => 3,
@@ -97,7 +97,7 @@ fn part1(input: &str) {
 
     for shapes in input
         .lines()
-        .map(|l| l.trim().split_whitespace().collect::<Vec<&str>>())
+        .map(|l| l.split_whitespace().collect::<Vec<&str>>())
     {
         let mut round = Round::new(shapes[1], shapes[0]);
         round.calc_score();
@@ -112,7 +112,7 @@ fn part2(input: &str) {
 
     for shapes in input
         .lines()
-        .map(|l| l.trim().split_whitespace().collect::<Vec<&str>>())
+        .map(|l| l.split_whitespace().collect::<Vec<&str>>())
     {
         let mut round = Round::calc_shape(shapes[0], shapes[1]);
         round.calc_score();

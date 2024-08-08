@@ -90,7 +90,7 @@ fn parse_input(root: &Rc<RefCell<Dir>>, input: &str) {
     let mut cwd = Rc::clone(root);
 
     for line in input.lines().skip(1) {
-        let parts: Vec<&str> = line.split(" ").collect();
+        let parts: Vec<&str> = line.split(' ').collect();
 
         if parts[0] == "$" {
             if parts[1] == "cd" {

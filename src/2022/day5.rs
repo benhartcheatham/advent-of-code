@@ -64,7 +64,7 @@ fn parse_input(input: &str) -> (Grid, Vec<(usize, usize, usize)>) {
     let mut crates: Vec<&str> = Vec::new();
 
     let mut lines = input.lines();
-    while let Some(line) = lines.next() {
+    for line in lines.by_ref() {
         if line.is_empty() {
             break;
         }
@@ -77,7 +77,7 @@ fn parse_input(input: &str) -> (Grid, Vec<(usize, usize, usize)>) {
     let mut levels: Vec<String> = Vec::new();
     for level in crates
         .iter()
-        .map(|s| s.as_bytes().into_iter().skip(1).step_by(4))
+        .map(|s| s.as_bytes().iter().skip(1).step_by(4))
     {
         levels.push(String::new());
 
@@ -90,9 +90,9 @@ fn parse_input(input: &str) -> (Grid, Vec<(usize, usize, usize)>) {
     let grid = Grid::new(levels);
 
     let mut instructions: Vec<(usize, usize, usize)> = Vec::new();
-    while let Some(line) = lines.next() {
+    for line in lines {
         let v = line
-            .split(" ")
+            .split(' ')
             .filter_map(|s| s.parse().ok())
             .collect::<Vec<u32>>();
         instructions.push((v[0] as usize, v[1] as usize, v[2] as usize));

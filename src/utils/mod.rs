@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 mod graph;
 
 #[derive(Debug, Clone, Copy)]
@@ -28,6 +30,25 @@ impl From<Direction> for i64 {
         match value {
             Up | Left => -1,
             Down | Right => 1,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct DirectionParseError;
+
+impl FromStr for Direction {
+    type Err = DirectionParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        use Direction::*;
+
+        match s.to_lowercase().as_str() {
+            "l" | "left" => Ok(Left),
+            "r" | "right" => Ok(Right),
+            "u" | "up" => Ok(Up),
+            "d" | "down" => Ok(Down),
+            _ => Err(DirectionParseError),
         }
     }
 }

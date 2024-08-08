@@ -49,7 +49,7 @@ impl<T> Edge<T> {
     }
 
     pub fn mark(&mut self) -> bool {
-        self.mark != self.mark;
+        self.mark = !self.mark;
         self.mark
     }
 

@@ -61,21 +61,27 @@ fn run_all() {
 }
 
 fn run_day(day: usize) {
-    println!("day{}:", day + 1);
+    println!("\nday{}:", day + 1);
     let result = DAYS[day]();
 
     match result {
         Ok(()) => (),
         Err(e) => println!("Error! ({:?})", e),
     }
-
-    println!();
 }
 
 pub fn run(day: Option<usize>) -> io::Result<()> {
-    match day {
-        Some(n) => run_day(n),
-        None => run_all(),
+    if let Some(n) = day {
+        let n = n.checked_sub(1).unwrap_or_else(|| {
+            println!("Invalid day: {}", n);
+            DAYS.len()
+        });
+
+        if n < DAYS.len() {
+            run_day(n);
+        }
+    } else {
+        run_all();
     }
 
     Ok(())

@@ -1,10 +1,10 @@
-use std::fs;
 use std::collections::HashMap;
+use std::fs;
 use std::io;
 
 pub fn run() -> Result<(), io::Error> {
     let input = fs::read_to_string("inputs/2023/day15.txt")?;
-    
+
     println!("solution: {}", solution(&input));
 
     Ok(())

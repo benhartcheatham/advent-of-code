@@ -1,6 +1,6 @@
-use std::fs;
 use std::collections::HashSet;
 use std::fmt::Display;
+use std::fs;
 use std::io;
 
 const EXPANSION_CONST: usize = 1_000_000;

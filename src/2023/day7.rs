@@ -1,6 +1,6 @@
-use std::fs;
 use std::cmp::Ordering;
 use std::collections::HashMap;
+use std::fs;
 use std::io;
 
 #[derive(Debug, Clone, Copy, Eq)]

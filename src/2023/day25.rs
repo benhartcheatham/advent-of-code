@@ -1,4 +1,4 @@
-use std::{fmt::Display, io, fs};
+use std::{fmt::Display, fs, io};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 struct Node {

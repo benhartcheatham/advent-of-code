@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
-mod graph;
+pub mod coord;
+pub mod grid;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Direction {

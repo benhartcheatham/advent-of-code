@@ -2,6 +2,7 @@ use std::io;
 mod day1;
 mod day10;
 mod day11;
+mod day12;
 mod day2;
 mod day3;
 mod day4;
@@ -11,7 +12,7 @@ mod day7;
 mod day8;
 mod day9;
 
-static DAYS: [fn() -> io::Result<()>; 11] = [
+static DAYS: [fn() -> io::Result<()>; 12] = [
     day1::run,
     day2::run,
     day3::run,
@@ -23,6 +24,7 @@ static DAYS: [fn() -> io::Result<()>; 11] = [
     day9::run,
     day10::run,
     day11::run,
+    day12::run,
 ];
 
 fn run_all() {

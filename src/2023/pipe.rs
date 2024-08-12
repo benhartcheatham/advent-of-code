@@ -65,7 +65,7 @@ impl Pipe {
         self.step_cnt
     }
 
-    pub fn find_connections(&mut self, pipes: &Vec<Vec<Pipe>>) {
+    pub fn find_connections(&mut self, pipes: &[Vec<Pipe>]) {
         let (r, c) = (self.pos.0, self.pos.1);
         let mut surround = Vec::new();
 
@@ -103,7 +103,7 @@ impl Pipe {
     }
 }
 
-pub fn find_start_kind(start: (usize, usize), pipes: &Vec<Vec<Pipe>>) -> Pipe {
+pub fn find_start_kind(start: (usize, usize), pipes: &[Vec<Pipe>]) -> Pipe {
     let (r, c) = start;
     let mut connections = [false, false, false, false];
 

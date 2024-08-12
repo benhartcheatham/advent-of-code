@@ -9,7 +9,7 @@ pub fn run() -> Result<(), io::Error> {
     Ok(())
 }
 
-fn find_horizontal_solution(rows: &Vec<String>) -> u64 {
+fn find_horizontal_solution(rows: &[String]) -> u64 {
     let mut reflection_points = Vec::new();
 
     for i in 0..rows.len() {

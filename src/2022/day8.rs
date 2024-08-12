@@ -39,7 +39,7 @@ fn mark_visible(grid: &mut Vec<Vec<Tree>>, start: (i64, i64), dir: Direction, mu
     }
 }
 
-fn find_scenic_score(grid: &Vec<Vec<Tree>>, idx: (i64, i64)) -> usize {
+fn find_scenic_score(grid: &[Vec<Tree>], idx: (i64, i64)) -> usize {
     let uidx = (idx.0 as usize, idx.1 as usize);
     let treeh = grid[uidx.0][uidx.1].height;
     let mut nums: [usize; 4] = [0; 4];

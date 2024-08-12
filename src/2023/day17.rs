@@ -63,7 +63,7 @@ impl Vertex {
         }
     }
 
-    fn get_edges(&self, graph: &Vec<Vec<u64>>) -> Vec<(usize, usize)> {
+    fn get_edges(&self, graph: &[Vec<u64>]) -> Vec<(usize, usize)> {
         let mut edges = Vec::new();
 
         if self.row > 0 && self.dir != Direction::Down {
@@ -156,7 +156,7 @@ impl Vertex {
     }
 
     /// Computes vertex as if we moved foward by 1 in the same direction
-    fn go_straight(&self, weights: &Vec<Vec<u64>>) -> Option<Vertex> {
+    fn go_straight(&self, weights: &[Vec<u64>]) -> Option<Vertex> {
         use Direction::*;
 
         if self.steps >= 10 {
@@ -222,7 +222,7 @@ fn find_path(start: (usize, usize), target: (usize, usize), weights: &Vec<Vec<u6
 
     while !queue.is_empty() {
         let u = queue.pop().unwrap();
-        if seen.get(&(u.get_coords(), u.dir, u.steps)).is_some() {
+        if seen.contains(&(u.get_coords(), u.dir, u.steps)) {
             continue;
         } else {
             seen.insert((u.get_coords(), u.dir, u.steps));

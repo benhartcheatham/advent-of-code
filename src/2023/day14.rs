@@ -13,7 +13,7 @@ pub fn run() -> Result<(), io::Error> {
 
 #[allow(unused)]
 // for debug
-fn print_cycle(cycled: &Vec<Vec<u64>>) {
+fn print_cycle(cycled: &[Vec<u64>]) {
     print!("   ");
     for i in 0..cycled[0].len() {
         print!("{:3}", i);

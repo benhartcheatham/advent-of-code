@@ -54,7 +54,7 @@ fn print_grid(start: (usize, usize), step_limit: usize, grid: &[Vec<Tile>]) {
     }
 }
 
-fn get_adjacent(pos: (usize, usize), grid: &Vec<Vec<Tile>>) -> Vec<(usize, usize)> {
+fn get_adjacent(pos: (usize, usize), grid: &[Vec<Tile>]) -> Vec<(usize, usize)> {
     let mut adj = Vec::new();
     let (r, c) = (pos.0, pos.1);
 

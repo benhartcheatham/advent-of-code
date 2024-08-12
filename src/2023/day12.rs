@@ -12,7 +12,7 @@ pub fn run() -> Result<(), io::Error> {
  * from here: https://www.reddit.com/r/adventofcode/comments/18ge41g/2023_day_12_solutions/kd18cl9/
  * comments by me :)
  */
-fn find_arrangements(springs: &str, groups: &Vec<bool>) -> u64 {
+fn find_arrangements(springs: &str, groups: &[bool]) -> u64 {
     let mut dp: Vec<Vec<u64>> = Vec::new();
     // dp[i][j] == [character c][possible states of c]
     dp.resize(springs.len() + 1, Vec::new());

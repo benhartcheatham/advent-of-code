@@ -19,10 +19,10 @@ impl Coord {
         let mut y = self.y;
 
         (x, y) = match direction {
-            Up => (x.checked_sub(size.unwrap_or(1)).unwrap_or(0), y),
-            Down => (x.checked_add(size.unwrap_or(1)).unwrap_or(usize::MAX), y),
-            Left => (x, y.checked_sub(size.unwrap_or(1)).unwrap_or(0)),
-            Right => (x, y.checked_add(size.unwrap_or(1)).unwrap_or(usize::MAX)),
+            Up => (x.saturating_sub(size.unwrap_or(1)), y),
+            Down => (x.saturating_add(size.unwrap_or(1)), y),
+            Left => (x, y.saturating_sub(size.unwrap_or(1))),
+            Right => (x, y.saturating_add(size.unwrap_or(1))),
         };
 
         Coord { x, y }

@@ -77,7 +77,7 @@ fn get_adjacent(pos: (usize, usize), grid: &[Vec<Tile>]) -> Vec<(usize, usize)> 
     adj
 }
 
-fn bfs(start: (usize, usize), limit: usize, grid: &mut Vec<Vec<Tile>>) {
+fn bfs(start: (usize, usize), limit: usize, grid: &mut [Vec<Tile>]) {
     let mut queue = VecDeque::new();
     let mut seen = HashSet::new();
 

@@ -4,24 +4,26 @@ use std::{
     fmt::Debug,
 };
 
+pub type GridCostFn<T> = fn(&Grid<T>, UCoord, UCoord) -> i64;
+
 #[allow(unused)]
 pub struct Grid<T> {
     cells: Vec<Vec<T>>,
-    traversal_fn: fn(&Grid<T>, Coord, Coord) -> i64,
+    cost_fn: Option<GridCostFn<T>>,
 }
 
 #[allow(unused)]
 impl<T: Copy + Clone> Grid<T> {
     /// traversal is a function that, given two adjacent points (v, u), computes the
     /// traversal cost from cells[v] to cells[u]
-    pub fn new(cells: Vec<Vec<T>>, traversal: fn(&Grid<T>, Coord, Coord) -> i64) -> Self {
+    pub fn new(cells: Vec<Vec<T>>, cost_fn: Option<GridCostFn<T>>) -> Self {
         Grid {
             cells,
-            traversal_fn: traversal,
+            cost_fn,
         }
     }
 
-    pub fn get(&self, coord: Coord) -> T {
+    pub fn get(&self, coord: UCoord) -> T {
         let (x, y) = coord.into();
         self.cells[x][y]
     }
@@ -44,13 +46,13 @@ impl<T: std::fmt::Debug> std::fmt::Debug for Grid<T> {
 #[allow(unused)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct HeapElem {
-    coord: Coord,
+    coord: UCoord,
     data: i64,
 }
 
 #[allow(unused)]
 impl HeapElem {
-    fn new(data: i64, coord: Coord) -> Self {
+    fn new(data: i64, coord: UCoord) -> Self {
         HeapElem { data, coord }
     }
 }
@@ -73,8 +75,12 @@ impl PartialOrd for HeapElem {
 #[allow(unused)]
 impl<T: Copy + Clone + Ord + Debug> Grid<T> {
     /// Takes in a starting and ending point and returns the shortest path between them
-    pub fn djikstra(&self, start: Coord, end: Coord) -> Vec<Coord> {
+    pub fn djikstra(&self, start: UCoord, end: UCoord) -> Vec<UCoord> {
         use crate::utils::Direction::*;
+
+        if self.cost_fn.is_none() {
+            return Vec::new();
+        }
 
         let mut queue = BinaryHeap::new();
         let mut visited = Vec::new();
@@ -83,8 +89,8 @@ impl<T: Copy + Clone + Ord + Debug> Grid<T> {
 
         for (i, r) in self.cells.iter().enumerate() {
             for (j, v) in r.iter().enumerate() {
-                dist.insert(Coord::new(i, j), i64::MAX);
-                prev.insert(Coord::new(i, j), Coord::new(usize::MAX, usize::MAX));
+                dist.insert(UCoord::new(i, j), i64::MAX);
+                prev.insert(UCoord::new(i, j), UCoord::new(usize::MAX, usize::MAX));
             }
         }
 
@@ -111,7 +117,7 @@ impl<T: Copy + Clone + Ord + Debug> Grid<T> {
                 }
 
                 let alt = dist[&u.coord]
-                    .checked_add((self.traversal_fn)(self, u.coord, v))
+                    .checked_add((self.cost_fn.unwrap())(self, u.coord, v))
                     .unwrap_or(i64::MAX);
                 if alt < dist[&v] {
                     *dist.get_mut(&v).unwrap() = alt;
@@ -123,7 +129,7 @@ impl<T: Copy + Clone + Ord + Debug> Grid<T> {
 
         let mut path = Vec::new();
         if let Some(u) = prev.get(&end) {
-            if start == end || *u == Coord::new(usize::MAX, usize::MAX) {
+            if start == end || *u == UCoord::new(usize::MAX, usize::MAX) {
                 return path;
             }
         } else {

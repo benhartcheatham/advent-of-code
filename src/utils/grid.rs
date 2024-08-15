@@ -17,10 +17,7 @@ impl<T: Copy + Clone> Grid<T> {
     /// traversal is a function that, given two adjacent points (v, u), computes the
     /// traversal cost from cells[v] to cells[u]
     pub fn new(cells: Vec<Vec<T>>, cost_fn: Option<GridCostFn<T>>) -> Self {
-        Grid {
-            cells,
-            cost_fn,
-        }
+        Grid { cells, cost_fn }
     }
 
     pub fn get(&self, coord: UCoord) -> T {

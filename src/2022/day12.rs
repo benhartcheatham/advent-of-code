@@ -3,7 +3,7 @@ use std::io;
 
 use crate::utils::{coord::*, grid::*};
 
-fn part1_traversal(grid: &Grid<u8>, u: Coord, v: Coord) -> i64 {
+fn cost_fn(grid: &Grid<u8>, u: UCoord, v: UCoord) -> i64 {
     if grid.get(u) == grid.get(v) || grid.get(u) + 1 == grid.get(v) || grid.get(u) > grid.get(v) {
         1
     } else {
@@ -13,7 +13,7 @@ fn part1_traversal(grid: &Grid<u8>, u: Coord, v: Coord) -> i64 {
 
 fn part1(input: &str) {
     let mut cells = Vec::new();
-    let (mut start, mut end) = (Coord::new(0, 0), Coord::new(0, 0));
+    let (mut start, mut end) = (UCoord::new(0, 0), UCoord::new(0, 0));
     for (i, line) in input.lines().map(|l| l.as_bytes()).enumerate() {
         cells.push(Vec::new());
 
@@ -21,11 +21,11 @@ fn part1(input: &str) {
             match *b {
                 b'a'..=b'z' => cells[i].push(*b),
                 b'S' => {
-                    start = Coord::new(i, j);
+                    start = UCoord::new(i, j);
                     cells[i].push(b'a');
                 }
                 b'E' => {
-                    end = Coord::new(i, j);
+                    end = UCoord::new(i, j);
                     cells[i].push(b'z');
                 }
                 _ => panic!(),
@@ -33,7 +33,7 @@ fn part1(input: &str) {
         }
     }
 
-    let grid = Grid::new(cells, part1_traversal);
+    let grid = Grid::new(cells, Some(cost_fn));
     let path = grid.djikstra(start, end);
 
     println!("part1: {}", path.len());
@@ -41,7 +41,7 @@ fn part1(input: &str) {
 
 fn part2(input: &str) {
     let mut cells = Vec::new();
-    let mut end = Coord::new(0, 0);
+    let mut end = UCoord::new(0, 0);
     let mut starts = Vec::new();
 
     for (i, line) in input.lines().map(|l| l.as_bytes()).enumerate() {
@@ -51,11 +51,11 @@ fn part2(input: &str) {
             match *b {
                 b'b'..=b'z' => cells[i].push(*b),
                 b'a' | b'S' => {
-                    starts.push(Coord::new(i, j));
+                    starts.push(UCoord::new(i, j));
                     cells[i].push(b'a');
                 }
                 b'E' => {
-                    end = Coord::new(i, j);
+                    end = UCoord::new(i, j);
                     cells[i].push(b'z');
                 }
                 _ => panic!(),
@@ -63,7 +63,7 @@ fn part2(input: &str) {
         }
     }
 
-    let grid = Grid::new(cells, part1_traversal);
+    let grid = Grid::new(cells, Some(cost_fn));
 
     println!(
         "part2: {}",

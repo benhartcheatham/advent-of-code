@@ -53,3 +53,16 @@ impl FromStr for Direction {
         }
     }
 }
+
+impl Direction {
+    pub fn invert(&self) -> Direction {
+        use Direction::*;
+
+        match self {
+            Up => Down,
+            Down => Up,
+            Left => Right,
+            Right => Left,
+        }
+    }
+}

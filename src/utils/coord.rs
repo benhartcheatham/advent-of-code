@@ -163,6 +163,10 @@ impl Coord {
             _ => None,
         }
     }
+
+    pub fn manhattan(&self, other: &Coord) -> i64 {
+        i64::abs(self.x.saturating_sub(other.x)) + i64::abs(self.y.saturating_sub(other.y))
+    }
 }
 
 impl std::fmt::Display for Coord {

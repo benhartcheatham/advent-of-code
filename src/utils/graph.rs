@@ -1,77 +1,107 @@
-use std::cell::RefCell;
-use std::rc::{Rc, Weak};
+use std::collections::{BinaryHeap, HashMap};
+use std::fmt::{Display, Formatter, Result};
 
-type GraphID = usize;
+pub type GraphID = usize;
 
-#[allow(unused)]
-pub struct Vertex<T: Ord + Eq + Clone> {
-    label: Option<String>,
+#[derive(Debug)]
+pub struct Vertex<T: Ord + Clone> {
+    pub label: String,
     id: GraphID,
-    data: T,
-    mark: bool,
-    edges: Vec<Weak<Edge<T>>>,
+    pub data: T,
+    pub mark: bool,
+    edges: Vec<Edge>,
+    eid_alloc: GraphID,
 }
 
 #[allow(unused)]
-impl<T: Ord + Eq + Clone> Vertex<T> {
+impl<T: Ord + Clone> Vertex<T> {
     fn new(data: T, id: GraphID, label: Option<&str>) -> Self {
         Vertex {
-            label: label.map(|s| s.to_string()),
+            label: label.unwrap_or("").to_owned(),
             id,
             data,
             mark: false,
             edges: Vec::new(),
+            eid_alloc: 0,
         }
+    }
+
+    fn get_label(&self) -> String {
+        if self.label.is_empty() {
+            format!("[{}]", self.id)
+        } else {
+            self.label.clone()
+        }
+    }
+
+    fn next_eid(&mut self) -> GraphID {
+        self.eid_alloc += 1;
+        self.eid_alloc - 1
+    }
+
+    pub fn iter(&self) -> VertexIterator<T> {
+        VertexIterator::new(self)
+    }
+
+    pub fn get_id(&self) -> GraphID {
+        self.id
     }
 
     pub fn mark(&mut self) {
         self.mark = !self.mark;
     }
 
-    pub fn get_data(&self) -> T {
-        self.data.clone()
+    fn get_edge(&self, eid: GraphID) -> Option<&Edge> {
+        self.edges.iter().find(|e| e.id == eid)
     }
 
-    pub fn set_data(&mut self, new: T) {
-        self.data = new;
+    fn get_edge_mut(&mut self, eid: GraphID) -> Option<&mut Edge> {
+        self.edges.iter_mut().find(|e| e.id == eid)
     }
 
-    pub fn remove_edge(&mut self, id: GraphID) {
-        let idx = self
-            .edges
-            .iter()
-            .enumerate()
-            .filter_map(|(i, we)| we.upgrade().map(|up| (i, up)))
-            .find(|(_, e)| e.id == id);
-
-        if let Some(idx) = idx {
-            self.edges.remove(idx.0);
+    fn remove_edge(&mut self, eid: GraphID) {
+        if let Some((i, _)) = self.edges.iter().enumerate().find(|(_, e)| e.id == eid) {
+            self.edges.remove(i);
         }
     }
 }
 
-impl<T: Ord + Eq + Clone> From<Vertex<T>> for GraphID {
-    fn from(value: Vertex<T>) -> Self {
-        value.id
+pub struct VertexIterator<'a, T: Ord + Clone> {
+    current: usize,
+    vertex: &'a Vertex<T>,
+}
+
+impl<'a, T: Ord + Clone> VertexIterator<'a, T> {
+    pub fn new(vertex: &Vertex<T>) -> VertexIterator<T> {
+        VertexIterator { current: 0, vertex }
+    }
+}
+
+impl<'a, T: Ord + Clone> Iterator for VertexIterator<'a, T> {
+    type Item = &'a Edge;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current < self.vertex.edges.len() {
+            self.current += 1;
+            return self.vertex.edges.get(self.current - 1);
+        }
+
+        None
     }
 }
 
 #[allow(unused)]
-pub struct Edge<T: Ord + Eq + Clone> {
-    from: Weak<RefCell<Vertex<T>>>,
-    to: Weak<RefCell<Vertex<T>>>,
-    weight: i64,
+#[derive(Debug)]
+pub struct Edge {
+    from: GraphID,
+    to: GraphID,
+    pub weight: i64,
     id: GraphID,
 }
 
 #[allow(unused)]
-impl<T: Ord + Eq + Clone> Edge<T> {
-    fn new(
-        from: Weak<RefCell<Vertex<T>>>,
-        to: Weak<RefCell<Vertex<T>>>,
-        weight: i64,
-        id: GraphID,
-    ) -> Self {
+impl Edge {
+    fn new(from: GraphID, to: GraphID, weight: i64, id: GraphID) -> Self {
         Edge {
             from,
             id,
@@ -80,72 +110,100 @@ impl<T: Ord + Eq + Clone> Edge<T> {
         }
     }
 
-    pub fn traverse(&self) -> Option<GraphID> {
-        self.to.upgrade().map(|v| v.borrow().id)
-    }
-
     pub fn get_weight(&self) -> i64 {
         self.weight
     }
+
+    pub fn get_id(&self) -> GraphID {
+        self.id
+    }
+
+    pub fn traverse(&self) -> GraphID {
+        self.to
+    }
 }
 
-impl<T: Ord + Eq + Clone> From<Edge<T>> for GraphID {
-    fn from(value: Edge<T>) -> Self {
-        value.id
+pub struct Graph<T: Ord + Clone> {
+    vertices: Vec<Option<Vertex<T>>>,
+    label_map: HashMap<String, GraphID>,
+    vid_alloc: GraphID,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct DState {
+    vid: GraphID,
+    dist: i64,
+}
+
+impl DState {
+    fn new(vid: GraphID, dist: i64) -> Self {
+        DState { vid, dist }
+    }
+}
+
+impl Ord for DState {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        other
+            .dist
+            .cmp(&self.dist)
+            .then_with(|| self.vid.cmp(&other.vid))
+    }
+}
+
+impl PartialOrd for DState {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
 
 #[allow(unused)]
-struct Graph<T: Ord + Eq + Clone> {
-    pub vertices: Vec<Rc<RefCell<Vertex<T>>>>,
-    pub edges: Vec<Rc<Edge<T>>>,
-    id_alloc: GraphID,
-    iter: usize,
-}
-
-#[allow(unused)]
-impl<T: Ord + Eq + Clone> Graph<T> {
+impl<T: Ord + Clone> Graph<T> {
     pub fn new() -> Self {
         Graph {
             vertices: Vec::new(),
-            edges: Vec::new(),
-            id_alloc: 0,
-            iter: 0,
+            label_map: HashMap::new(),
+            vid_alloc: 0,
         }
     }
 
-    fn next_id(&mut self) -> GraphID {
-        let ret = self.id_alloc;
+    fn next_vid(&mut self) -> GraphID {
+        self.vid_alloc += 1;
+        self.vid_alloc - 1
+    }
 
-        self.id_alloc += 1;
-        ret
+    pub fn get_vertex(&self, id: GraphID) -> Option<&Vertex<T>> {
+        self.vertices.get(id)?.as_ref()
+    }
+
+    pub fn get_vertex_mut(&mut self, id: GraphID) -> Option<&mut Vertex<T>> {
+        self.vertices.get_mut(id)?.as_mut()
+    }
+
+    pub fn find_vertex_by_label(&self, label: &str) -> Option<GraphID> {
+        self.label_map.get(label).copied()
     }
 
     pub fn add_vertex(&mut self, data: T, label: Option<&str>) -> GraphID {
-        let id = self.next_id();
-        let ret = Rc::new(RefCell::new(Vertex::new(data, id, label)));
+        let id = self.next_vid();
 
-        self.vertices.push(Rc::clone(&ret));
+        self.vertices.insert(id, Some(Vertex::new(data, id, label)));
+        if let Some(label) = label {
+            self.label_map.insert(label.to_string(), id);
+        }
+
         id
     }
 
-    pub fn add_edge(&mut self, v1: GraphID, v2: GraphID, weight: i64) -> Option<GraphID> {
-        let eid = self.next_id();
-        let v1 = self.vertices.iter().find(|v| v.borrow().id == v1);
-        let v2 = self.vertices.iter().find(|v| v.borrow().id == v2);
-
-        if v1.is_none() || v2.is_none() {
+    pub fn add_edge(&mut self, vid1: GraphID, vid2: GraphID, weight: i64) -> Option<GraphID> {
+        if self.get_vertex(vid1).is_none() || self.get_vertex(vid2).is_none() {
             return None;
         }
 
-        let edge = Rc::new(Edge::new(
-            Rc::downgrade(v1.unwrap()),
-            Rc::downgrade(v2.unwrap()),
-            weight,
-            eid,
-        ));
-        v1.unwrap().borrow_mut().edges.push(Rc::downgrade(&edge));
-        self.edges.push(Rc::clone(&edge));
+        let v1 = self.get_vertex_mut(vid1)?;
+        let eid = v1.next_eid();
+
+        let edge = Edge::new(vid1, vid2, weight, eid);
+        v1.edges.insert(eid, edge);
 
         Some(eid)
     }
@@ -160,38 +218,117 @@ impl<T: Ord + Eq + Clone> Graph<T> {
         let eid2 = self.add_edge(v2, v1, weight);
 
         if eid2.is_none() {
-            self.remove_edge(eid1);
+            self.get_vertex_mut(v1).unwrap().remove_edge(eid1);
             return None;
         }
 
         Some((eid1, eid2.unwrap()))
     }
 
-    pub fn get_vertex(&self, id: GraphID) -> Option<Rc<RefCell<Vertex<T>>>> {
-        self.vertices.iter().find(|v| v.borrow().id == id).cloned()
-    }
-
     pub fn remove_vertex(&mut self, id: GraphID) {
-        let idx = self
-            .vertices
-            .iter()
-            .enumerate()
-            .find(|(_, v)| v.borrow().id == id);
-
-        if let Some(idx) = idx {
-            self.vertices.remove(idx.0);
+        if id < self.vertices.len() {
+            self.vertices[id] = None;
         }
     }
 
-    pub fn remove_edge(&mut self, id: GraphID) {
-        let idx = self.edges.iter().enumerate().find(|(_, e)| e.id == id);
+    pub fn len(&self) -> usize {
+        self.vertices.iter().filter(|v| v.is_some()).count()
+    }
 
-        if let Some((idx, edge)) = idx {
-            if let Some(v) = edge.from.upgrade() {
-                v.borrow_mut().remove_edge(edge.id);
+    /// Finds weight of shortest path from start to all other vertices in graph
+    ///
+    /// Return: Vec where tuple.0 is ID of vertex and tuple.1 is weight
+    /// of shortest path
+    pub fn djikstra(&self, start: GraphID) -> Vec<(GraphID, i64)> {
+        let mut queue: BinaryHeap<DState> = BinaryHeap::new();
+        let mut dist = vec![i64::MAX; self.len()];
+
+        dist[start] = 0;
+
+        queue.push(DState::new(start, dist[start]));
+        while !queue.is_empty() {
+            let u = queue.pop().unwrap();
+
+            for e in &self.get_vertex(u.vid).unwrap().edges {
+                let alt = dist[u.vid] + e.get_weight();
+                let v = e.traverse();
+
+                if alt < dist[v] {
+                    dist[v] = alt;
+                    queue.push(DState::new(v, alt));
+                }
+            }
+        }
+
+        dist.into_iter().enumerate().collect()
+    }
+
+    fn print_edge(&self, edge: &Edge) -> String {
+        if let Some(v) = self.get_vertex(edge.traverse()) {
+            v.get_label()
+        } else {
+            String::new()
+        }
+    }
+}
+
+impl<T: Ord + Clone> Display for Graph<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        for v in self.vertices.iter().filter_map(|v| v.as_ref()) {
+            write!(f, "{}: [", v.get_label())?;
+
+            if !v.edges.is_empty() {
+                for e in v.iter().take(v.edges.len() - 1) {
+                    write!(f, "{}({}), ", self.print_edge(e), e.weight)?;
+                }
+
+                let idx = v.edges.len() - 1;
+                write!(
+                    f,
+                    "{}({})",
+                    self.print_edge(&v.edges[idx]),
+                    &v.edges[idx].weight
+                )?;
             }
 
-            self.edges.remove(idx);
+            writeln!(f, "]")?;
         }
+
+        Ok(())
+    }
+}
+
+pub struct GraphIterator<'a, T: Ord + Clone> {
+    current: GraphID,
+    graph: &'a Graph<T>,
+}
+
+impl<'a, T: Ord + Clone> GraphIterator<'a, T> {
+    fn new(graph: &'a Graph<T>) -> Self {
+        GraphIterator { current: 0, graph }
+    }
+}
+
+impl<'a, T: Ord + Clone> Iterator for GraphIterator<'a, T> {
+    type Item = GraphID;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        while self.current < self.graph.vertices.len() {
+            let ret = self.graph.vertices.get(self.current);
+            self.current += 1;
+
+            if ret.is_some() {
+                return Some(self.current - 1);
+            }
+        }
+
+        None
+    }
+}
+
+#[allow(unused)]
+impl<T: Ord + Clone> Graph<T> {
+    pub fn iter(&self) -> GraphIterator<T> {
+        GraphIterator::new(self)
     }
 }

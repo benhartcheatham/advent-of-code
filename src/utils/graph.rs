@@ -39,8 +39,8 @@ impl<T: Ord + Clone> Vertex<T> {
         self.eid_alloc - 1
     }
 
-    pub fn iter(&self) -> VertexIterator<T> {
-        VertexIterator::new(self)
+    pub fn iter(&self) -> std::slice::Iter<Edge> {
+        self.edges.iter()
     }
 
     pub fn get_id(&self) -> GraphID {
@@ -63,30 +63,6 @@ impl<T: Ord + Clone> Vertex<T> {
         if let Some((i, _)) = self.edges.iter().enumerate().find(|(_, e)| e.id == eid) {
             self.edges.remove(i);
         }
-    }
-}
-
-pub struct VertexIterator<'a, T: Ord + Clone> {
-    current: usize,
-    vertex: &'a Vertex<T>,
-}
-
-impl<'a, T: Ord + Clone> VertexIterator<'a, T> {
-    pub fn new(vertex: &Vertex<T>) -> VertexIterator<T> {
-        VertexIterator { current: 0, vertex }
-    }
-}
-
-impl<'a, T: Ord + Clone> Iterator for VertexIterator<'a, T> {
-    type Item = &'a Edge;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.current < self.vertex.edges.len() {
-            self.current += 1;
-            return self.vertex.edges.get(self.current - 1);
-        }
-
-        None
     }
 }
 

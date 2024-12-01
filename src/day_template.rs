@@ -12,6 +12,6 @@ fn part2(input: &str) {
 }
 
 pub fn run() -> io::Result<()> {
-    let input = fs::read_to_string("");
+    let input = fs::read_to_string("")?;
     Ok(())
 }

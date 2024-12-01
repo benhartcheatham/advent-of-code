@@ -11,6 +11,8 @@ mod utils;
 mod year22;
 #[path = "2023/mod.rs"]
 mod year23;
+#[path = "2024/mod.rs"]
+mod year24;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -109,6 +111,7 @@ fn run(year: &str, day: Option<usize>) -> io::Result<()> {
     match year {
         "2022" => year22::run(day),
         "2023" => year23::run(day),
+        "2024" => year24::run(day),
         _ => Ok(()),
     }
 }

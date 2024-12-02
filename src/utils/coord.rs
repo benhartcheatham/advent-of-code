@@ -112,22 +112,6 @@ impl Coord {
         Coord { x, y }
     }
 
-    pub fn translate(&self, direction: Direction, size: Option<i64>) -> Self {
-        use Direction::*;
-
-        let mut x = self.x;
-        let mut y = self.y;
-
-        (x, y) = match direction {
-            Up => (x.saturating_sub(size.unwrap_or(1)), y),
-            Down => (x.saturating_add(size.unwrap_or(1)), y),
-            Left => (x, y.saturating_sub(size.unwrap_or(1))),
-            Right => (x, y.saturating_add(size.unwrap_or(1))),
-        };
-
-        Coord { x, y }
-    }
-
     pub fn check_bounds(&self, x_lower: i64, x_upper: i64, y_lower: i64, y_upper: i64) -> bool {
         self.x < x_upper && self.y < y_upper && self.x > x_lower && self.y > y_lower
     }
@@ -161,6 +145,19 @@ impl Coord {
             (0, -1) => Some(Direction::Left),
             (0, 1) => Some(Direction::Right),
             _ => None,
+        }
+    }
+
+    // TODO: Convert From<Direction> trait to produce cartesian coordinates.
+    // Requires fixing at least 2022/day14.
+    pub fn to_cartesian(dir: Direction) -> Coord {
+        use Direction::*;
+
+        match dir {
+            Up => Coord::new(0, 1),
+            Down => Coord::new(0, -1),
+            Left => Coord::new(-1, 0),
+            Right => Coord::new(1, 0),
         }
     }
 

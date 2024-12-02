@@ -37,8 +37,8 @@ enum Commands {
     Create {
         #[arg(short, long)]
         year: String,
-        #[arg(short, long, default_value_t = 0)]
-        day: usize,
+        #[arg(short, long)]
+        day: Option<usize>,
         // Session key for getting input. If not specified, this command will only create a template
         // file
         #[arg(short, long)]
@@ -67,80 +67,93 @@ async fn main() -> io::Result<()> {
 
 async fn create(
     year: &str,
-    day: usize,
+    day: Option<usize>,
     session: Option<PathBuf>,
     download: bool,
 ) -> io::Result<()> {
-    if !download {
-        let mut template = File::open("src/day_template.rs").expect("Could not find day template");
-        let mut day_file =
-            File::create(format!("src/{}/day{}.rs", year, day)).expect("Error creating day file");
-        let mut buf = Vec::new();
+    let client = create_client();
 
-        template.read_to_end(&mut buf)?;
-        day_file.write_all(&buf)?;
-    } else if session.is_none() {
+    let lower = day.unwrap_or(1);
+    let upper = day.unwrap_or(25);
+
+    if !download {
+        for i in lower..=upper {
+            create_day(year, i)?;
+        }
+    }
+
+    if session.is_none() && download {
         return Err(io::Error::new(
             io::ErrorKind::Other,
-            "no session cookie specified, required for downloading inputs!",
+            "Session cookie file (-s option) required for --download option",
         ));
     }
 
-    if session.is_none() {
+    let key = fs::read_to_string(session.expect("Session cookie file not provided"))
+        .expect("Could not find session cookie file");
+    for i in lower..=upper {
+        download_inputs(&client, &key, year, i).await?;
+    }
+
+    Ok(())
+}
+
+fn create_day(year: &str, day: usize) -> io::Result<()> {
+    let path = format!("src/{}/day{}.rs", year, day);
+    if Path::new(&path).exists() {
         return Ok(());
     }
 
-    let key = fs::read_to_string(session.unwrap()).expect("Could not find session cookie file");
-    download_inputs(&key, year, day).await
+    let mut template = File::open("src/day_template.rs").expect("Could not find day template");
+    let mut day_file = File::create(path).expect("Error creating day file");
+    let mut buf = Vec::new();
+
+    template.read_to_end(&mut buf)?;
+    day_file.write_all(&buf)
 }
 
-async fn download_inputs(key: &str, year: &str, day: usize) -> io::Result<()> {
+async fn download_inputs(client: &Client, key: &str, year: &str, day: usize) -> io::Result<()> {
     let year_path = format!("inputs/{}", year);
 
     if !Path::new(&year_path).exists() {
         fs::create_dir(year_path)?;
     }
 
-    let (lower, upper) = if day == 0 { (1, 25) } else { (day, day) };
+    let day_path = format!("inputs/{}/day{}.txt", year, day);
+    if Path::new(&day_path).exists() {
+        return Ok(());
+    }
 
-    for i in lower..=upper {
-        let day_path = format!("inputs/{}/day{}.txt", year, i);
+    let mut input = File::create(day_path)?;
+    let url = format!("https://adventofcode.com/{}/day/{}/input", year, day);
 
-        if Path::new(&day_path).exists() {
-            continue;
-        }
-
-        let mut input = File::create(day_path)?;
-        let url = format!("https://adventofcode.com/{}/day/{}/input", year, i);
-
-        if let Some(text) = send_request(key, &url).await {
-            input.write_all(text.as_bytes())?;
-        } else {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                format!("Error getting puzzle input for {} day {}", year, i),
-            ));
-        }
+    if let Some(text) = send_request(client, key, &url).await {
+        input.write_all(text.as_bytes())?;
+    } else {
+        return Err(io::Error::new(
+            io::ErrorKind::Other,
+            format!("Error getting puzzle input for {} day {}", year, day),
+        ));
     }
 
     Ok(())
 }
 
-async fn send_request(session: &str, url: &str) -> Option<String> {
-    let client = Client::builder()
+fn create_client() -> Client {
+    Client::builder()
         .user_agent("benhartcheatham@gmail.com")
         .cookie_store(true)
         .build()
-        .unwrap();
+        .unwrap()
+}
 
+async fn send_request(client: &Client, session: &str, url: &str) -> Option<String> {
     let mut req = client.get(url).build().unwrap();
     req.headers_mut().insert(
         COOKIE,
         HeaderValue::from_str(&format!("session={}", session.trim())).unwrap(),
     );
 
-    // println!("{:?}", client);
-    // println!("{:?}", req);
     if let Ok(response) = client.execute(req).await {
         let text = response.text().await.unwrap();
         Some(text)

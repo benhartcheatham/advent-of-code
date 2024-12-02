@@ -1,8 +1,10 @@
 use std::io;
 mod day1;
+mod day2;
 
-static DAYS: [fn() -> io::Result<()>; 1] = [
+static DAYS: [fn() -> io::Result<()>; 2] = [
     day1::run,
+    day2::run,
 ];
 
 fn run_all() {

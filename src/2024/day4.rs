@@ -2,7 +2,7 @@ use std::fs;
 use std::io;
 
 use crate::utils::coord::Coord;
-use crate::utils::grid::in_ibounds;
+use crate::utils::grid::{in_ibounds, GridCoord};
 
 fn search(grid: &Vec<Vec<char>>, mut coord: Coord, xdir: i64, ydir: i64, needle: &str) -> u64 {
     for ch in needle.chars() {
@@ -10,7 +10,7 @@ fn search(grid: &Vec<Vec<char>>, mut coord: Coord, xdir: i64, ydir: i64, needle:
             return 0;
         }
 
-        let (x, y) = coord.as_unsigned().unwrap().into();
+        let (x, y) = GridCoord::from_coord(coord.abs()).unwrap().into();
         if grid[x][y] != ch {
             return 0;
         }
@@ -26,7 +26,7 @@ fn search_cross(grid: &Vec<Vec<char>>, coord: Coord) -> u64 {
         return 0;
     }
 
-    let (x, y) = coord.as_unsigned().unwrap().into();
+    let (x, y) = GridCoord::from_coord(coord.abs()).unwrap().into();
     if grid[x][y] != 'A' {
         return 0;
     }
@@ -35,7 +35,8 @@ fn search_cross(grid: &Vec<Vec<char>>, coord: Coord) -> u64 {
         coord + Coord::new(-1, -1),
         coord + Coord::new(1, -1),
         coord + Coord::new(-1, 1),
-        coord + Coord::new(1, 1), ];
+        coord + Coord::new(1, 1),
+    ];
 
     for c in to_check {
         if !in_ibounds(grid, c) {
@@ -46,7 +47,7 @@ fn search_cross(grid: &Vec<Vec<char>>, coord: Coord) -> u64 {
     let to_check: Vec<char> = to_check
         .iter()
         .map(|c| {
-            let (x, y) = c.as_unsigned().unwrap().into();
+            let (x, y) = GridCoord::from_coord(c.abs()).unwrap().into();
             grid[x][y]
         })
         .collect();

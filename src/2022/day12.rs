@@ -1,9 +1,9 @@
 use std::fs;
 use std::io;
 
-use crate::utils::{coord::*, grid::*};
+use crate::utils::grid::*;
 
-fn cost_fn(grid: &[Vec<u8>], u: UCoord, v: UCoord) -> i64 {
+fn cost_fn(grid: &[Vec<u8>], u: GridCoord, v: GridCoord) -> i64 {
     let (ux, uy) = u.into();
     let (vx, vy) = v.into();
 
@@ -19,7 +19,7 @@ fn cost_fn(grid: &[Vec<u8>], u: UCoord, v: UCoord) -> i64 {
 
 fn part1(input: &str) {
     let mut cells = Vec::new();
-    let (mut start, mut end) = (UCoord::new(0, 0), UCoord::new(0, 0));
+    let (mut start, mut end) = (GridCoord::new(0, 0), GridCoord::new(0, 0));
     for (i, line) in input.lines().map(|l| l.as_bytes()).enumerate() {
         cells.push(Vec::new());
 
@@ -27,11 +27,11 @@ fn part1(input: &str) {
             match *b {
                 b'a'..=b'z' => cells[i].push(*b),
                 b'S' => {
-                    start = UCoord::new(i, j);
+                    start = GridCoord::new(i, j);
                     cells[i].push(b'a');
                 }
                 b'E' => {
-                    end = UCoord::new(i, j);
+                    end = GridCoord::new(i, j);
                     cells[i].push(b'z');
                 }
                 _ => panic!(),
@@ -46,7 +46,7 @@ fn part1(input: &str) {
 
 fn part2(input: &str) {
     let mut cells = Vec::new();
-    let mut end = UCoord::new(0, 0);
+    let mut end = GridCoord::new(0, 0);
     let mut starts = Vec::new();
 
     for (i, line) in input.lines().map(|l| l.as_bytes()).enumerate() {
@@ -56,11 +56,11 @@ fn part2(input: &str) {
             match *b {
                 b'b'..=b'z' => cells[i].push(*b),
                 b'a' | b'S' => {
-                    starts.push(UCoord::new(i, j));
+                    starts.push(GridCoord::new(i, j));
                     cells[i].push(b'a');
                 }
                 b'E' => {
-                    end = UCoord::new(i, j);
+                    end = GridCoord::new(i, j);
                     cells[i].push(b'z');
                 }
                 _ => panic!(),

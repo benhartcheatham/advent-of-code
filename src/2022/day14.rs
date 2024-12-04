@@ -2,8 +2,7 @@ use std::fs;
 use std::io;
 
 use crate::utils::coord::*;
-use crate::utils::grid::{in_bounds, in_ibounds};
-use crate::utils::Direction;
+use crate::utils::grid::*;
 
 const EXTRA_COLS: usize = 200;
 
@@ -27,7 +26,7 @@ impl std::fmt::Display for Cell {
 }
 
 fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
-    let mut rocks: Vec<Vec<UCoord>> = Vec::new();
+    let mut rocks: Vec<Vec<Coord>> = Vec::new();
 
     for (i, line) in input
         .lines()
@@ -37,19 +36,19 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
         rocks.push(Vec::new());
 
         for coord in line {
-            let parts: Vec<usize> = coord
+            let parts: Vec<i64> = coord
                 .split(',')
-                .map(|s| s.parse::<usize>().unwrap())
+                .map(|s| s.parse::<i64>().unwrap())
                 .collect();
 
-            rocks[i].push(UCoord::new(parts[1], parts[0]));
+            rocks[i].push(Coord::new(parts[1], parts[0]));
         }
     }
 
     let xdim = rocks.iter().flatten().map(|c| c.get_x()).max().unwrap() + 1;
     let ydim = rocks.iter().flatten().map(|c| c.get_y()).max().unwrap() + 1;
 
-    let mut grid: Vec<Vec<Cell>> = vec![vec![Cell::Air; ydim]; xdim];
+    let mut grid: Vec<Vec<Cell>> = vec![vec![Cell::Air; ydim as usize]; xdim as usize];
 
     // fill in rocks
     let origin = Coord::new(0, 0);
@@ -58,26 +57,26 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
             let start = path[i];
             let mut diff = path[i + 1] - path[i];
 
-            grid[start.get_x()][start.get_y()] = Cell::Rock;
+            grid[start.get_x() as usize][start.get_y() as usize] = Cell::Rock;
             while diff != origin {
                 let c = Coord::new(
-                    start.get_x() as i64 + diff.get_x(),
-                    start.get_y() as i64 + diff.get_y(),
-                );
+                    start.get_x() + diff.get_x(),
+                    start.get_y() + diff.get_y(),
+                )
+                .abs();
 
-                if let Some(c) = c.as_unsigned() {
-                    if !in_bounds(&grid, c) {
-                        continue;
-                    }
-
-                    grid[c.get_x()][c.get_y()] = Cell::Rock;
+                if !in_ibounds(&grid, c) {
+                    continue;
                 }
 
-                match diff.as_direction().unwrap() {
-                    Direction::Up => diff = diff + Direction::Down.into(),
-                    Direction::Down => diff = diff + Direction::Up.into(),
-                    Direction::Left => diff = diff + Direction::Right.into(),
-                    Direction::Right => diff = diff + Direction::Left.into(),
+                grid[c.get_x() as usize][c.get_y() as usize] = Cell::Rock;
+
+                match diff.unit().into() {
+                    (0, -1) => diff = diff + GridDirection::Down.into(),
+                    (0, 1) => diff = diff + GridDirection::Up.into(),
+                    (-1, 0) => diff = diff + GridDirection::Right.into(),
+                    (1, 0) => diff = diff + GridDirection::Left.into(),
+                    _ => panic!("Invalid direction: {:?}", diff.unit()),
                 }
             }
         }
@@ -101,10 +100,10 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
     grid
 }
 
-fn drop_in_bounds(grid: &Vec<Vec<Cell>>, c: UCoord) -> bool {
-    use Direction::*;
+fn drop_in_bounds(grid: &Vec<Vec<Cell>>, c: GridCoord) -> bool {
+    use GridDirection::*;
 
-    let below = c.as_signed().unwrap() + Down.into();
+    let below = Coord::new(c.get_x() as i64, c.get_y() as i64) + Down.into();
     let botleft = below + Left.into();
     let botright = below + Right.into();
 
@@ -124,19 +123,19 @@ fn drop_in_bounds(grid: &Vec<Vec<Cell>>, c: UCoord) -> bool {
 }
 
 fn part1(input: &str) {
-    use Direction::*;
+    use GridDirection::*;
     let mut grid = create_grid(input, false);
-    let mut sand = UCoord::new(0, 500);
+    let mut sand = GridCoord::new(0, 500);
 
     while in_bounds(&grid, sand) {
         if !drop_in_bounds(&grid, sand) {
             break;
         }
 
-        let below = sand.as_signed().unwrap() + Down.into();
-        let botleft = (below + Left.into()).as_unsigned().unwrap();
-        let botright = (below + Right.into()).as_unsigned().unwrap();
-        let below = below.as_unsigned().unwrap();
+        let below = Coord::new(sand.get_x() as i64, sand.get_y() as i64) + Down.into();
+        let botleft = GridCoord::from_coord((below + Left.into()).abs()).unwrap();
+        let botright = GridCoord::from_coord((below + Right.into()).abs()).unwrap();
+        let below = GridCoord::from_coord(below.abs()).unwrap();
 
         if grid[below.get_x()][below.get_y()] == Cell::Air {
             sand = below;
@@ -146,7 +145,7 @@ fn part1(input: &str) {
             sand = botright;
         } else {
             grid[sand.get_x()][sand.get_y()] = Cell::Sand;
-            sand = UCoord::new(0, 500);
+            sand = GridCoord::new(0, 500);
         }
     }
 
@@ -159,16 +158,16 @@ fn part1(input: &str) {
 }
 
 fn part2(input: &str) {
-    use Direction::*;
+    use GridDirection::*;
     let mut grid = create_grid(input, true);
-    let mut sand = UCoord::new(0, 500 + EXTRA_COLS);
+    let mut sand = GridCoord::new(0, 500 + EXTRA_COLS);
 
     while in_bounds(&grid, sand) {
-        let below = sand.as_signed().unwrap() + Down.into();
+        let below: Coord = Coord::new(sand.get_x() as i64, sand.get_y() as i64) + Down.into();
 
-        let botleft = (below + Left.into()).as_unsigned().unwrap();
-        let botright = (below + Right.into()).as_unsigned().unwrap();
-        let below = below.as_unsigned().unwrap();
+        let botleft = GridCoord::from_coord((below + Left.into()).abs()).unwrap();
+        let botright = GridCoord::from_coord((below + Right.into()).abs()).unwrap();
+        let below = GridCoord::from_coord(below.abs()).unwrap();
 
         if grid[below.get_x()][below.get_y()] == Cell::Air {
             sand = below;
@@ -178,11 +177,11 @@ fn part2(input: &str) {
             sand = botright;
         } else {
             grid[sand.get_x()][sand.get_y()] = Cell::Sand;
-            if sand == UCoord::new(0, 500 + EXTRA_COLS) {
+            if sand == GridCoord::new(0, 500 + EXTRA_COLS) {
                 break;
             }
 
-            sand = UCoord::new(0, 500 + EXTRA_COLS);
+            sand = GridCoord::new(0, 500 + EXTRA_COLS);
         }
     }
 

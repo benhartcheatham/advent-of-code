@@ -3,7 +3,7 @@ use std::io;
 use std::collections::VecDeque;
 
 use crate::utils::coord::*;
-use crate::utils::Direction;
+use crate::utils::direction::*;
 
 #[derive(Debug)]
 struct Space {
@@ -114,13 +114,13 @@ impl Rock {
     fn update(&mut self, dir: Direction, space: &mut Space) -> bool {
         let mut landed = false;
 
-        self.translate(Coord::to_cartesian(dir));
+        self.translate(dir.into());
 
         for p in &self.points {
             let x = p.get_x();
 
             if x < 0 || x as usize >= space.len() || space.conflicts(*p) {
-                self.translate(Coord::to_cartesian(dir.invert()));
+                self.translate(dir.invert().into());
                 break;
             }
         }
@@ -139,7 +139,7 @@ impl Rock {
                 space.update(*p);
             }
         } else {
-            self.translate(Coord::to_cartesian(Direction::Down));
+            self.translate(Direction::S.into());
             if self.points.iter().map(|p| p.get_y()).any(|n| n < 0) {
                 panic!("Invalid coordinates: {:?}", self);
             }
@@ -166,8 +166,8 @@ enum RockTypes {
 
 fn char_to_dir(ch: char) -> Direction {
     match ch {
-        '>' => Direction::Right,
-        '<' => Direction::Left,
+        '>' => Direction::E,
+        '<' => Direction::W,
         _ => panic!("Invalid character {}!", ch),
     }
 }

@@ -1,7 +1,8 @@
 use std::fs;
 use std::io;
 
-use crate::utils::Direction;
+use crate::utils::coord::Coord;
+use crate::utils::direction::Direction;
 
 #[derive(Debug)]
 struct Tree {
@@ -34,8 +35,9 @@ fn mark_visible(grid: &mut Vec<Vec<Tree>>, start: (i64, i64), dir: Direction, mu
     }
 
     match dir {
-        Up | Down => mark_visible(grid, (Into::<i64>::into(dir) + start.0, start.1), dir, max),
-        Left | Right => mark_visible(grid, (start.0, Into::<i64>::into(dir) + start.1), dir, max),
+        N | S => mark_visible(grid, (Into::<Coord>::into(dir).get_x() + start.0, start.1), dir, max),
+        W | E => mark_visible(grid, (start.0, Into::<Coord>::into(dir).get_y() + start.1), dir, max),
+        _ => panic!("Invalid direction: {:?}", dir),
     }
 }
 
@@ -96,17 +98,19 @@ fn part1(input: &str) {
         grid.push(row);
     }
 
+    // TODO: Verify this is right, i substituted the GridDirections with flipped
+    // Directions (Up -> S, Down -> N, etc.)
     let clen = grid[0].len() as i64;
     for i in 0..grid.len() {
-        mark_visible(&mut grid, (i as i64, 0), Direction::Right, 0);
-        mark_visible(&mut grid, (i as i64, clen - 1), Direction::Left, 0);
+        mark_visible(&mut grid, (i as i64, 0), Direction::W, 0);
+        mark_visible(&mut grid, (i as i64, clen - 1), Direction::E, 0);
     }
 
     for i in 0..clen {
         let len = (grid.len() - 1) as i64;
 
-        mark_visible(&mut grid, (0, i), Direction::Down, 0);
-        mark_visible(&mut grid, (len, i), Direction::Up, 0);
+        mark_visible(&mut grid, (0, i), Direction::N, 0);
+        mark_visible(&mut grid, (len, i), Direction::S, 0);
     }
 
     println!(

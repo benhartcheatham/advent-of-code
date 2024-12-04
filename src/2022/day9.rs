@@ -1,14 +1,17 @@
 use std::fs;
 use std::io;
 
-use crate::utils::Direction;
+use crate::utils::coord::Coord;
+use crate::utils::direction::*;
+use crate::utils::grid::GridDirection;
 
 fn move_head(mut hdx: (i64, i64), dir: Direction) -> (i64, i64) {
     use Direction::*;
 
     match dir {
-        Up | Down => hdx.0 += Into::<i64>::into(dir),
-        Left | Right => hdx.1 += Into::<i64>::into(dir),
+        N | S => hdx.0 += Into::<Coord>::into(dir).get_x(),
+        W | E => hdx.1 += Into::<Coord>::into(dir).get_y(),
+        _ => panic!("Invalid direction {:?}", dir),
     }
 
     hdx
@@ -63,7 +66,7 @@ fn part1(input: &str) {
 
     for line in input.lines().map(|l| l.split(' ').collect::<Vec<&str>>()) {
         instructions.push((
-            line[0].parse::<Direction>().unwrap(),
+            line[0].parse::<GridDirection>().unwrap().into(),
             line[1].parse::<usize>().unwrap(),
         ));
     }
@@ -92,7 +95,7 @@ fn part2(input: &str) {
 
     for line in input.lines().map(|l| l.split(' ').collect::<Vec<&str>>()) {
         instructions.push((
-            line[0].parse::<Direction>().unwrap(),
+            line[0].parse::<GridDirection>().unwrap().into(),
             line[1].parse::<usize>().unwrap(),
         ));
     }

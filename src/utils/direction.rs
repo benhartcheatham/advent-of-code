@@ -1,15 +1,27 @@
 use crate::utils::coord::*;
 
+#[allow(unused)]
+pub const DIRECTIONS: [Direction; 8] = [
+    Direction::N,
+    Direction::S,
+    Direction::E,
+    Direction::W,
+    Direction::NE,
+    Direction::NW,
+    Direction::SE,
+    Direction::SW,
+];
+
 #[derive(Debug, Clone, Copy)]
 pub enum Direction {
     N,
     S,
-    W,
-    NW,
-    SW,
     E,
-    SE,
+    W,
     NE,
+    NW,
+    SE,
+    SW,
 }
 
 impl Direction {
@@ -43,5 +55,11 @@ impl From<Direction> for Coord {
             SE => Coord::new(1, -1),
             SW => Coord::new(-1, -1),
         }
+    }
+}
+
+impl From<Direction> for (i64, i64) {
+    fn from(value: Direction) -> Self {
+        Into::<Coord>::into(value).into()
     }
 }

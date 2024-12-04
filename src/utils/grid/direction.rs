@@ -2,6 +2,14 @@ use std::str::FromStr;
 
 use crate::utils::{coord::Coord, direction::Direction};
 
+#[allow(unused)]
+pub const DIRECTIONS: [GridDirection; 4] = [
+    GridDirection::Up,
+    GridDirection::Down,
+    GridDirection::Left,
+    GridDirection::Right,
+];
+
 #[derive(Debug, Clone, Copy)]
 pub enum GridDirection {
     Up,

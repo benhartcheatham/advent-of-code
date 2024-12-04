@@ -2,6 +2,7 @@ use std::fs;
 use std::io;
 
 use crate::utils::coord::Coord;
+use crate::utils::direction::DIRECTIONS;
 use crate::utils::grid::in_ibounds;
 
 fn search(grid: &Vec<Vec<char>>, mut coord: Coord, xdir: i64, ydir: i64, needle: &str) -> u64 {
@@ -70,22 +71,14 @@ fn part1(input: &str) {
         grid.push(line.chars().collect());
     }
 
-    let dirs = [
-        (1, 0),
-        (1, 1),
-        (0, 1),
-        (-1, 1),
-        (-1, 0),
-        (-1, -1),
-        (0, -1),
-        (1, -1),
-    ];
-
     for i in 0..grid.len() {
         for j in 0..grid[i].len() {
-            cnt += dirs.iter().fold(0, |acc, (x, y)| {
-                acc + search(&grid, Coord::new(i as i64, j as i64), *x, *y, "XMAS")
-            });
+            cnt += DIRECTIONS
+                .into_iter()
+                .map(Into::<(i64, i64)>::into)
+                .fold(0, |acc, (x, y)| {
+                    acc + search(&grid, Coord::new(i as i64, j as i64), x, y, "XMAS")
+                });
         }
     }
 

@@ -211,6 +211,10 @@ impl<T: Ord + Clone> Graph<T> {
         self.vertices.iter().filter(|v| v.is_some()).count()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.vertices.is_empty()
+    }
+
     /// Finds weight of shortest path from start to all other vertices in graph
     ///
     /// Return: Vec where tuple.0 is ID of vertex and tuple.1 is weight
@@ -245,6 +249,12 @@ impl<T: Ord + Clone> Graph<T> {
         } else {
             String::new()
         }
+    }
+}
+
+impl<T: Ord + Clone> Default for Graph<T> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

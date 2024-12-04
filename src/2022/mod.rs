@@ -38,13 +38,16 @@ static DAYS: [fn() -> io::Result<()>; 17] = [
 ];
 
 fn run_all() {
-    for i in 0..DAYS.len() {
+    for i in 0..(DAYS.len() - 1) {
         run_day(i);
+        println!();
     }
+
+    run_day(DAYS.len() - 1);
 }
 
 fn run_day(day: usize) {
-    println!("\nday{}:", day + 1);
+    println!("day{}:", day + 1);
     let result = DAYS[day]();
 
     match result {

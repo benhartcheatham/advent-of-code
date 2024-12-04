@@ -1,6 +1,6 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, AddAssign, Sub, SubAssign};
 
-/// Cartesian coordinate type 
+/// Cartesian coordinate type
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Coord {
     x: i64,
@@ -67,6 +67,12 @@ impl From<Coord> for (i64, i64) {
     }
 }
 
+impl From<Coord> for (usize, usize) {
+    fn from(value: Coord) -> Self {
+        (value.x as usize, value.y as usize)
+    }
+}
+
 impl Sub for Coord {
     type Output = Self;
 
@@ -80,5 +86,23 @@ impl Add for Coord {
 
     fn add(self, rhs: Self) -> Self::Output {
         Self::new(self.x + rhs.x, self.y + rhs.y)
+    }
+}
+
+impl AddAssign for Coord {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = Self {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
+    }
+}
+
+impl SubAssign for Coord {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = Self {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
     }
 }

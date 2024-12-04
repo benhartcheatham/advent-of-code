@@ -150,7 +150,7 @@ impl Rock {
 
     fn translate(&mut self, coord: Coord) {
         for p in self.points.iter_mut() {
-            *p = *p + coord;
+            *p += coord;
         }
     }
 }

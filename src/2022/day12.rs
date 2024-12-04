@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 
-use crate::utils::grid::*;
+use crate::utils::grid::{algo::*, coord::*};
 
 fn cost_fn(grid: &[Vec<u8>], u: GridCoord, v: GridCoord) -> i64 {
     let (ux, uy) = u.into();

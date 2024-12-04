@@ -2,7 +2,8 @@ use std::fs;
 use std::io;
 
 use crate::utils::coord::*;
-use crate::utils::grid::*;
+use crate::utils::grid::in_bounds;
+use crate::utils::grid::{coord::*, direction::*, in_ibounds};
 
 const EXTRA_COLS: usize = 200;
 
@@ -59,11 +60,8 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
 
             grid[start.get_x() as usize][start.get_y() as usize] = Cell::Rock;
             while diff != origin {
-                let c = Coord::new(
-                    start.get_x() + diff.get_x(),
-                    start.get_y() + diff.get_y(),
-                )
-                .abs();
+                let c =
+                    Coord::new(start.get_x() + diff.get_x(), start.get_y() + diff.get_y()).abs();
 
                 if !in_ibounds(&grid, c) {
                     continue;
@@ -71,11 +69,12 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
 
                 grid[c.get_x() as usize][c.get_y() as usize] = Cell::Rock;
 
-                match diff.unit().into() {
-                    (0, -1) => diff = diff + GridDirection::Down.into(),
-                    (0, 1) => diff = diff + GridDirection::Up.into(),
-                    (-1, 0) => diff = diff + GridDirection::Right.into(),
-                    (1, 0) => diff = diff + GridDirection::Left.into(),
+                let temp: (i64, i64) = diff.unit().into();
+                match temp {
+                    (0, -1) => diff += GridDirection::Down.into(),
+                    (0, 1) => diff += GridDirection::Up.into(),
+                    (-1, 0) => diff += GridDirection::Right.into(),
+                    (1, 0) => diff += GridDirection::Left.into(),
                     _ => panic!("Invalid direction: {:?}", diff.unit()),
                 }
             }

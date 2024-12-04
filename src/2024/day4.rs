@@ -10,7 +10,7 @@ fn search(grid: &Vec<Vec<char>>, mut coord: Coord, xdir: i64, ydir: i64, needle:
             return 0;
         }
 
-        let (x, y): (usize, usize) = coord.into();
+        let (x, y): (usize, usize) = Into::<Option<(usize, usize)>>::into(coord).unwrap();
         if grid[x][y] != ch {
             return 0;
         }
@@ -26,7 +26,7 @@ fn search_cross(grid: &Vec<Vec<char>>, coord: Coord) -> u64 {
         return 0;
     }
 
-    let (x, y): (usize, usize) = coord.into();
+    let (x, y): (usize, usize) = Into::<Option<(usize, usize)>>::into(coord).unwrap();
     if grid[x][y] != 'A' {
         return 0;
     }
@@ -47,7 +47,7 @@ fn search_cross(grid: &Vec<Vec<char>>, coord: Coord) -> u64 {
     let to_check: Vec<char> = to_check
         .iter()
         .map(|c| {
-            let (x, y): (usize, usize) = (*c).into();
+            let (x, y): (usize, usize) = Into::<Option<(usize, usize)>>::into(*c).unwrap();
             grid[x][y]
         })
         .collect();

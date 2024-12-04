@@ -2,6 +2,8 @@ use std::ops::{Add, AddAssign, Sub, SubAssign};
 
 use crate::utils::coord::Coord;
 
+/// Coordinate system for Grids (a.k.a Vec<Vec<T>>) with some
+/// utility functions and traits
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct GridCoord {
     x: usize,
@@ -69,9 +71,31 @@ impl std::cmp::PartialOrd for GridCoord {
     }
 }
 
+/// Only fails when the GridCoord has a coordinate larger than i64::MAX
+impl From<GridCoord> for Option<Coord> {
+    fn from(value: GridCoord) -> Self {
+        if value.x > i64::MAX as usize || value.y > i64::MAX as usize {
+            None
+        } else {
+            Some(Coord::new(value.x as i64, value.y as i64))
+        }
+    }
+}
+
 impl From<GridCoord> for (usize, usize) {
     fn from(value: GridCoord) -> Self {
         (value.x, value.y)
+    }
+}
+
+/// Only fails when the GridCoord has a coordinate larger than i64::MAX
+impl From<GridCoord> for Option<(i64, i64)> {
+    fn from(value: GridCoord) -> Self {
+        if value.x > i64::MAX as usize || value.y > i64::MAX as usize {
+            None
+        } else {
+            Some((value.x as i64, value.y as i64))
+        }
     }
 }
 

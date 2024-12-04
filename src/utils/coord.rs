@@ -1,13 +1,13 @@
 use std::ops::{Add, AddAssign, Sub, SubAssign};
 
-/// Cartesian coordinate type
+/// Cartesian coordinate type with some utility functions
+/// and traits
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Coord {
     x: i64,
     y: i64,
 }
 
-// TODO: Implement .X notation for Coord (like with tuples)
 #[allow(unused)]
 impl Coord {
     pub fn new(x: i64, y: i64) -> Self {
@@ -22,24 +22,34 @@ impl Coord {
         self.y
     }
 
-    pub fn unit(&self) -> Coord {
+    /// Gets a new Coord where each inner coordinate is
+    /// reduced to either -1, 0, or 1.
+    pub fn unit(&self) -> Self {
         Coord::new(self.x.signum(), self.y.signum())
     }
 
-    pub fn abs(&self) -> Coord {
+    /// Gets a new Coord where each inner coordinate is
+    /// the absolute value of this Coord
+    pub fn abs(&self) -> Self {
         Self::new(self.x.abs(), self.y.abs())
     }
 
-    pub fn saturating_add(&self, rhs: &Coord) -> Self {
+    pub fn saturating_add(&self, rhs: &Self) -> Self {
         Self::new(self.x.saturating_add(rhs.x), self.y.saturating_add(rhs.y))
     }
 
-    pub fn saturating_sub(&self, rhs: &Coord) -> Self {
+    pub fn saturating_sub(&self, rhs: &Self) -> Self {
         Self::new(self.x.saturating_sub(rhs.x), self.y.saturating_sub(rhs.y))
     }
 
-    pub fn manhattan(&self, other: &Coord) -> i64 {
+    /// Gets the manhattan distance between this Coord and @other
+    pub fn manhattan(&self, other: &Self) -> i64 {
         i64::abs(self.x - other.x) + i64::abs(self.y - other.y)
+    }
+
+    /// Gets the cartesian distance between this Coord and @other
+    pub fn distance(&self, other: &Self) -> f64 {
+        f64::sqrt(((self.x - other.x) as f64).powf(2.0) + ((self.y - other.y) as f64).powf(2.0))
     }
 }
 
@@ -67,9 +77,14 @@ impl From<Coord> for (i64, i64) {
     }
 }
 
-impl From<Coord> for (usize, usize) {
+/// Fails when Coord has a negative value
+impl From<Coord> for Option<(usize, usize)> {
     fn from(value: Coord) -> Self {
-        (value.x as usize, value.y as usize)
+        if value.x < 0 || value.y < 0 {
+            None
+        } else {
+            Some((value.x as usize, value.y as usize))
+        }
     }
 }
 

@@ -2,6 +2,7 @@ use std::fs;
 use std::io;
 
 use crate::utils::coord::Coord;
+use crate::utils::direction::Direction;
 use crate::utils::direction::DIRECTIONS;
 use crate::utils::grid::in_ibounds;
 
@@ -27,16 +28,16 @@ fn search_cross(grid: &Vec<Vec<char>>, coord: Coord) -> u64 {
         return 0;
     }
 
-    let (x, y): (usize, usize) = Into::<Option<(usize, usize)>>::into(coord).unwrap();
-    if grid[x][y] != 'A' {
+    let (x, y) = coord.into();
+    if grid[x as usize][y as usize] != 'A' {
         return 0;
     }
 
     let to_check = [
-        coord + Coord::new(-1, -1),
-        coord + Coord::new(1, -1),
-        coord + Coord::new(-1, 1),
-        coord + Coord::new(1, 1),
+        coord + Direction::NW.into(),
+        coord + Direction::NE.into(),
+        coord + Direction::SW.into(),
+        coord + Direction::SE.into(),
     ];
 
     for c in to_check {
@@ -46,12 +47,14 @@ fn search_cross(grid: &Vec<Vec<char>>, coord: Coord) -> u64 {
     }
 
     let to_check: Vec<char> = to_check
-        .iter()
-        .map(|c| {
-            let (x, y): (usize, usize) = Into::<Option<(usize, usize)>>::into(*c).unwrap();
-            grid[x][y]
-        })
+        .into_iter()
+        .filter_map(Into::<Option<(usize, usize)>>::into)
+        .map(|(x, y)| grid[x][y])
         .collect();
+
+    if to_check.len() < 4 {
+        return 0;
+    }
 
     for pair in [(to_check[0], to_check[3]), (to_check[1], to_check[2])] {
         match pair {

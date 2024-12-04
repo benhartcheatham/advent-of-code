@@ -2,6 +2,7 @@ use std::fs;
 use std::io;
 
 use crate::utils::coord::*;
+use crate::utils::grid::{in_bounds, in_ibounds};
 use crate::utils::Direction;
 
 const EXTRA_COLS: usize = 200;
@@ -65,7 +66,7 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
                 );
 
                 if let Some(c) = c.as_unsigned() {
-                    if !c.check_bounds(grid.len(), grid[0].len()) {
+                    if !in_bounds(&grid, c) {
                         continue;
                     }
 
@@ -100,22 +101,22 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
     grid
 }
 
-fn drop_in_bounds(c: UCoord, xlen: usize, ylen: usize) -> bool {
+fn drop_in_bounds(grid: &Vec<Vec<Cell>>, c: UCoord) -> bool {
     use Direction::*;
 
     let below = c.as_signed().unwrap() + Down.into();
     let botleft = below + Left.into();
     let botright = below + Right.into();
 
-    if !below.check_bounds(0, xlen as i64, 0, ylen as i64) {
+    if !in_ibounds(grid, below) {
         return false;
     }
 
-    if !botleft.check_bounds(0, xlen as i64, 0, ylen as i64) {
+    if !in_ibounds(grid, botleft) {
         return false;
     }
 
-    if !botright.check_bounds(0, xlen as i64, 0, ylen as i64) {
+    if !in_ibounds(grid, botright) {
         return false;
     }
 
@@ -127,8 +128,8 @@ fn part1(input: &str) {
     let mut grid = create_grid(input, false);
     let mut sand = UCoord::new(0, 500);
 
-    while sand.check_bounds(grid.len(), grid[0].len()) {
-        if !drop_in_bounds(sand, grid.len(), grid[0].len()) {
+    while in_bounds(&grid, sand) {
+        if !drop_in_bounds(&grid, sand) {
             break;
         }
 
@@ -162,7 +163,7 @@ fn part2(input: &str) {
     let mut grid = create_grid(input, true);
     let mut sand = UCoord::new(0, 500 + EXTRA_COLS);
 
-    while sand.check_bounds(grid.len(), grid[0].len()) {
+    while in_bounds(&grid, sand) {
         let below = sand.as_signed().unwrap() + Down.into();
 
         let botleft = (below + Left.into()).as_unsigned().unwrap();

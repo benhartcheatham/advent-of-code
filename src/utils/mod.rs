@@ -4,6 +4,10 @@ pub mod coord;
 pub mod grid;
 pub mod graph;
 
+// TODO: Add all cardinal directions (N, NE, NW, etc.). Maybe as own struct?
+
+// TODO: Rename to something like SimpleDirections, or GridDirections?
+// TODO: Use cardinal directions instead
 #[derive(Debug, Clone, Copy)]
 pub enum Direction {
     Up,
@@ -12,6 +16,7 @@ pub enum Direction {
     Right,
 }
 
+// TODO: Remove? Seems useless
 impl From<Direction> for u64 {
     fn from(value: Direction) -> Self {
         use Direction::*;

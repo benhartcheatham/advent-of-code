@@ -3,8 +3,14 @@ use std::io;
 
 use crate::utils::{coord::*, grid::*};
 
-fn cost_fn(grid: &Grid<u8>, u: UCoord, v: UCoord) -> i64 {
-    if grid.get(u) == grid.get(v) || grid.get(u) + 1 == grid.get(v) || grid.get(u) > grid.get(v) {
+fn cost_fn(grid: &[Vec<u8>], u: UCoord, v: UCoord) -> i64 {
+    let (ux, uy) = u.into();
+    let (vx, vy) = v.into();
+
+    if grid[ux][uy] == grid[vx][vy]
+        || grid[ux][uy] + 1 == grid[vx][vy]
+        || grid[ux][uy] > grid[vx][vy]
+    {
         1
     } else {
         i64::MAX
@@ -33,8 +39,7 @@ fn part1(input: &str) {
         }
     }
 
-    let grid = Grid::new(cells, Some(cost_fn));
-    let path = grid.djikstra(start, end);
+    let path = djikstra(&cells, start, end, cost_fn);
 
     println!("part1: {}", path.len());
 }
@@ -63,14 +68,12 @@ fn part2(input: &str) {
         }
     }
 
-    let grid = Grid::new(cells, Some(cost_fn));
-
     println!(
         "part2: {}",
         starts
             .iter()
             .filter_map(|s| {
-                let len = grid.djikstra(*s, end).len();
+                let len = djikstra(&cells, *s, end, cost_fn).len();
                 if len != 0 {
                     Some(len)
                 } else {

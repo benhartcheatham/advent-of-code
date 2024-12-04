@@ -2,6 +2,7 @@ use std::ops::{Add, Sub};
 
 use crate::utils::Direction;
 
+// TODO: Rename to something like GridCoord
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct UCoord {
     x: usize,
@@ -28,10 +29,6 @@ impl UCoord {
         };
 
         UCoord { x, y }
-    }
-
-    pub fn check_bounds(&self, x_bound: usize, y_bound: usize) -> bool {
-        self.x < x_bound && self.y < y_bound
     }
 
     pub fn get_x(&self) -> usize {
@@ -83,6 +80,7 @@ impl From<UCoord> for (usize, usize) {
     }
 }
 
+// TODO: Fix this (wtf was i thinking?)
 impl Sub for UCoord {
     type Output = Coord;
 
@@ -92,6 +90,7 @@ impl Sub for UCoord {
     }
 }
 
+// TODO: Fix to overflow, add saturating_sub/add methods instead
 impl Add for UCoord {
     type Output = UCoord;
 
@@ -100,20 +99,18 @@ impl Add for UCoord {
     }
 }
 
+// TODO: Rename to CartesianCoord? At least add doc comment
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Coord {
     x: i64,
     y: i64,
 }
 
+// TODO: Implement .X notation for Coord (like with tuples)
 #[allow(unused)]
 impl Coord {
     pub fn new(x: i64, y: i64) -> Self {
         Coord { x, y }
-    }
-
-    pub fn check_bounds(&self, x_lower: i64, x_upper: i64, y_lower: i64, y_upper: i64) -> bool {
-        self.x < x_upper && self.y < y_upper && self.x > x_lower && self.y > y_lower
     }
 
     pub fn get_x(&self) -> i64 {
@@ -128,6 +125,7 @@ impl Coord {
         Coord::new(self.x.signum(), self.y.signum())
     }
 
+    // TODO: Replace with abs() function
     pub fn as_unsigned(&self) -> Option<UCoord> {
         if self.x < 0 || self.y < 0 {
             None
@@ -203,6 +201,8 @@ impl From<Direction> for Coord {
     }
 }
 
+// TODO: Fix Sub and Add traits to overflow and introduce saturating_sub/add instead
+// methods instead
 impl Sub for Coord {
     type Output = Self;
 

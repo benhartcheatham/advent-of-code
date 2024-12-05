@@ -24,13 +24,13 @@ impl Sensor {
     fn row_cover(&self, row: i64) -> Vec<Coord> {
         let mut cover = Vec::new();
 
-        let coord = Coord::new(self.coord.get_x(), row);
+        let coord = Coord::new(self.coord.x, row);
         if !self.in_radius(&coord) {
             return Vec::new();
         }
 
         for i in
-            (self.coord.get_x() - self.radius as i64)..=(self.coord.get_x() + self.radius as i64)
+            (self.coord.x - self.radius as i64)..=(self.coord.x + self.radius as i64)
         {
             let coord = Coord::new(i, row);
 
@@ -45,21 +45,21 @@ impl Sensor {
     fn cover(&self) -> HashMap<i64, Coord> {
         let mut cover = HashMap::new();
         let (ly, hy) = (
-            self.coord.get_y() - self.radius as i64,
-            self.coord.get_y() + self.radius as i64,
+            self.coord.y - self.radius as i64,
+            self.coord.y + self.radius as i64,
         );
 
         for i in 0..=((hy - ly) / 2) {
             cover.insert(
                 ly + i,
-                Coord::new(self.coord.get_x() - i, self.coord.get_x() + i),
+                Coord::new(self.coord.x - i, self.coord.x + i),
             );
         }
 
         for i in 0..((hy - ly) / 2) {
             cover.insert(
                 hy - i,
-                Coord::new(self.coord.get_x() - i, self.coord.get_x() + i),
+                Coord::new(self.coord.x - i, self.coord.x + i),
             );
         }
 
@@ -70,8 +70,8 @@ impl Sensor {
         let (x, y) = coord.into();
 
         if let Some(c) = cover.get(&y) {
-            if c.get_x() <= x && x <= c.get_y() {
-                Some(Coord::new(c.get_y() + 1, y))
+            if c.x <= x && x <= c.y {
+                Some(Coord::new(c.y + 1, y))
             } else {
                 None
             }
@@ -113,12 +113,12 @@ fn part1(input: &str, row: i64) {
         let cover = s.row_cover(row);
 
         for c in cover {
-            if c.get_x() < min {
-                min = c.get_x();
+            if c.x < min {
+                min = c.x;
             }
 
-            if c.get_x() > max {
-                max = c.get_x();
+            if c.x > max {
+                max = c.x;
             }
         }
     }
@@ -154,10 +154,10 @@ fn part2(input: &str, low: Coord, high: Coord) {
 
     let covers: Vec<HashMap<i64, Coord>> = sensors.iter().map(|s| s.cover()).collect();
     let (mut x, mut y) = low.into();
-    while y <= high.get_y() {
-        if x > high.get_x() {
+    while y <= high.y {
+        if x > high.x {
             y += 1;
-            x = low.get_x();
+            x = low.x;
         }
 
         let mut skipped = false;

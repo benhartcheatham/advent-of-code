@@ -9,8 +9,8 @@ fn move_head(mut hdx: (i64, i64), dir: Direction) -> (i64, i64) {
     use Direction::*;
 
     match dir {
-        N | S => hdx.0 += Into::<Coord>::into(dir).get_x(),
-        W | E => hdx.1 += Into::<Coord>::into(dir).get_y(),
+        N | S => hdx.0 += Into::<Coord>::into(dir).x,
+        W | E => hdx.1 += Into::<Coord>::into(dir).y,
         _ => panic!("Invalid direction {:?}", dir),
     }
 

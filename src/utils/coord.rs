@@ -4,22 +4,14 @@ use std::ops::{Add, AddAssign, Sub, SubAssign};
 /// and traits
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Coord {
-    x: i64,
-    y: i64,
+    pub x: i64,
+    pub y: i64,
 }
 
 #[allow(unused)]
 impl Coord {
     pub fn new(x: i64, y: i64) -> Self {
         Coord { x, y }
-    }
-
-    pub fn get_x(&self) -> i64 {
-        self.x
-    }
-
-    pub fn get_y(&self) -> i64 {
-        self.y
     }
 
     /// Gets a new Coord where each inner coordinate is

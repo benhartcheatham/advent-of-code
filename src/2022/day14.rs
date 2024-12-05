@@ -46,8 +46,8 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
         }
     }
 
-    let xdim = rocks.iter().flatten().map(|c| c.get_x()).max().unwrap() + 1;
-    let ydim = rocks.iter().flatten().map(|c| c.get_y()).max().unwrap() + 1;
+    let xdim = rocks.iter().flatten().map(|c| c.x).max().unwrap() + 1;
+    let ydim = rocks.iter().flatten().map(|c| c.y).max().unwrap() + 1;
 
     let mut grid: Vec<Vec<Cell>> = vec![vec![Cell::Air; ydim as usize]; xdim as usize];
 
@@ -58,16 +58,16 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
             let start = path[i];
             let mut diff = path[i + 1] - path[i];
 
-            grid[start.get_x() as usize][start.get_y() as usize] = Cell::Rock;
+            grid[start.x as usize][start.y as usize] = Cell::Rock;
             while diff != origin {
                 let c =
-                    Coord::new(start.get_x() + diff.get_x(), start.get_y() + diff.get_y()).abs();
+                    Coord::new(start.x + diff.x, start.y + diff.y).abs();
 
                 if !in_ibounds(&grid, c) {
                     continue;
                 }
 
-                grid[c.get_x() as usize][c.get_y() as usize] = Cell::Rock;
+                grid[c.x as usize][c.y as usize] = Cell::Rock;
 
                 let temp: (i64, i64) = diff.unit().into();
                 match temp {
@@ -102,7 +102,7 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
 fn drop_in_bounds(grid: &Vec<Vec<Cell>>, c: GridCoord) -> bool {
     use GridDirection::*;
 
-    let below = Coord::new(c.get_x() as i64, c.get_y() as i64) + Down.into();
+    let below = Coord::new(c.x as i64, c.y as i64) + Down.into();
     let botleft = below + Left.into();
     let botright = below + Right.into();
 
@@ -131,19 +131,19 @@ fn part1(input: &str) {
             break;
         }
 
-        let below = Coord::new(sand.get_x() as i64, sand.get_y() as i64) + Down.into();
+        let below = Coord::new(sand.x as i64, sand.y as i64) + Down.into();
         let botleft = GridCoord::from_coord((below + Left.into()).abs()).unwrap();
         let botright = GridCoord::from_coord((below + Right.into()).abs()).unwrap();
         let below = GridCoord::from_coord(below.abs()).unwrap();
 
-        if grid[below.get_x()][below.get_y()] == Cell::Air {
+        if grid[below.x][below.y] == Cell::Air {
             sand = below;
-        } else if grid[botleft.get_x()][botleft.get_y()] == Cell::Air {
+        } else if grid[botleft.x][botleft.y] == Cell::Air {
             sand = botleft;
-        } else if grid[botright.get_x()][botright.get_y()] == Cell::Air {
+        } else if grid[botright.x][botright.y] == Cell::Air {
             sand = botright;
         } else {
-            grid[sand.get_x()][sand.get_y()] = Cell::Sand;
+            grid[sand.x][sand.y] = Cell::Sand;
             sand = GridCoord::new(0, 500);
         }
     }
@@ -162,20 +162,20 @@ fn part2(input: &str) {
     let mut sand = GridCoord::new(0, 500 + EXTRA_COLS);
 
     while in_bounds(&grid, sand) {
-        let below: Coord = Coord::new(sand.get_x() as i64, sand.get_y() as i64) + Down.into();
+        let below: Coord = Coord::new(sand.x as i64, sand.y as i64) + Down.into();
 
         let botleft = GridCoord::from_coord((below + Left.into()).abs()).unwrap();
         let botright = GridCoord::from_coord((below + Right.into()).abs()).unwrap();
         let below = GridCoord::from_coord(below.abs()).unwrap();
 
-        if grid[below.get_x()][below.get_y()] == Cell::Air {
+        if grid[below.x][below.y] == Cell::Air {
             sand = below;
-        } else if grid[botleft.get_x()][botleft.get_y()] == Cell::Air {
+        } else if grid[botleft.x][botleft.y] == Cell::Air {
             sand = botleft;
-        } else if grid[botright.get_x()][botright.get_y()] == Cell::Air {
+        } else if grid[botright.x][botright.y] == Cell::Air {
             sand = botright;
         } else {
-            grid[sand.get_x()][sand.get_y()] = Cell::Sand;
+            grid[sand.x][sand.y] = Cell::Sand;
             if sand == GridCoord::new(0, 500 + EXTRA_COLS) {
                 break;
             }

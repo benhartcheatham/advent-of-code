@@ -75,12 +75,12 @@ pub fn djikstra<T: Copy + Clone + Ord + Debug>(
         // TODO: Verify this isn't broken, I had to replace the .translate() method
         for d in &directions {
             let dc: Coord = (*d).into();
-            let v = if dc.get_x() < 0 {
+            let v = if dc.x < 0 {
                 u.coord.saturating_sub(GridCoord::new(1, 0))
             } else {
                 u.coord + GridCoord::new(1, 0)
             };
-            let v = if dc.get_y() < 0 {
+            let v = if dc.y < 0 {
                 v.saturating_sub(GridCoord::new(0, 1))
             } else {
                 v.saturating_add(GridCoord::new(0, 1))

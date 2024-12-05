@@ -23,7 +23,7 @@ impl Space {
     }
 
     fn conflicts(&self, coord: Coord) -> bool {
-        let (x, y) = (coord.get_x() as usize, coord.get_y() as usize);
+        let (x, y) = (coord.x as usize, coord.y as usize);
         assert!(x < 7);
 
         if y >= self.spaces.len() {
@@ -35,7 +35,7 @@ impl Space {
     }
 
     fn update(&mut self, coord: Coord) {
-        let (x, y) = (coord.get_x() as usize, coord.get_y() as usize);
+        let (x, y) = (coord.x as usize, coord.y as usize);
         assert!(x < 7);
 
         while self.spaces.len() < (y + 1) {
@@ -117,7 +117,7 @@ impl Rock {
         self.translate(dir.into());
 
         for p in &self.points {
-            let x = p.get_x();
+            let x = p.x;
 
             if x < 0 || x as usize >= space.len() || space.conflicts(*p) {
                 self.translate(dir.invert().into());
@@ -128,7 +128,7 @@ impl Rock {
         for p in &self.bottom {
             let c = self.points[*p];
 
-            if space.conflicts(Coord::new(c.get_x(), c.get_y() - 1)) {
+            if space.conflicts(Coord::new(c.x, c.y - 1)) {
                 landed = true;
                 break;
             }
@@ -140,7 +140,7 @@ impl Rock {
             }
         } else {
             self.translate(Direction::S.into());
-            if self.points.iter().map(|p| p.get_y()).any(|n| n < 0) {
+            if self.points.iter().map(|p| p.y).any(|n| n < 0) {
                 panic!("Invalid coordinates: {:?}", self);
             }
         }

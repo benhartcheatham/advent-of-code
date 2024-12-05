@@ -35,8 +35,8 @@ fn mark_visible(grid: &mut Vec<Vec<Tree>>, start: (i64, i64), dir: Direction, mu
     }
 
     match dir {
-        N | S => mark_visible(grid, (Into::<Coord>::into(dir).get_x() + start.0, start.1), dir, max),
-        W | E => mark_visible(grid, (start.0, Into::<Coord>::into(dir).get_y() + start.1), dir, max),
+        N | S => mark_visible(grid, (Into::<Coord>::into(dir).x + start.0, start.1), dir, max),
+        W | E => mark_visible(grid, (start.0, Into::<Coord>::into(dir).y + start.1), dir, max),
         _ => panic!("Invalid direction: {:?}", dir),
     }
 }

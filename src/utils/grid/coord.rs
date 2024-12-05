@@ -6,8 +6,8 @@ use crate::coord::Coord;
 /// utility functions and traits
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct GridCoord {
-    x: usize,
-    y: usize,
+    pub x: usize,
+    pub y: usize,
 }
 
 #[allow(unused)]
@@ -18,14 +18,6 @@ impl GridCoord {
 
     pub fn mult_scalar(&self, size: usize) -> Self {
         Self::new(self.x * size, self.y * size)
-    }
-
-    pub fn get_x(&self) -> usize {
-        self.x
-    }
-
-    pub fn get_y(&self) -> usize {
-        self.y
     }
 
     pub fn unit(&self) -> GridCoord {
@@ -44,10 +36,10 @@ impl GridCoord {
     }
 
     pub fn from_coord(coord: Coord) -> Option<Self> {
-        if coord.get_x() < 0 || coord.get_y() < 0 {
+        if coord.x < 0 || coord.y < 0 {
             None
         } else {
-            Some(Self::new(coord.get_x() as usize, coord.get_y() as usize))
+            Some(Self::new(coord.x as usize, coord.y as usize))
         }
     }
 }

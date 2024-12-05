@@ -2,8 +2,8 @@ use std::fs;
 use std::io;
 use std::collections::VecDeque;
 
-use crate::utils::coord::*;
-use crate::utils::direction::*;
+use aocutils::coord::*;
+use aocutils::direction::*;
 
 #[derive(Debug)]
 struct Space {

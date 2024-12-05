@@ -1,4 +1,4 @@
-use crate::utils::coord::*;
+use crate::coord::*;
 
 #[allow(unused)]
 pub const DIRECTIONS: [Direction; 8] = [

@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::utils::{coord::Coord, direction::Direction};
+use crate::{coord::Coord, direction::Direction};
 
 #[allow(unused)]
 pub const DIRECTIONS: [GridDirection; 4] = [

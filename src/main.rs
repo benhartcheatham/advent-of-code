@@ -6,7 +6,12 @@ use std::io::Write;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 
-use advent_of_code::*;
+#[path = "2022/mod.rs"]
+mod year22;
+#[path = "2023/mod.rs"]
+mod year23;
+#[path = "2024/mod.rs"]
+mod year24;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]

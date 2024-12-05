@@ -1,7 +1,8 @@
-pub mod utils;
-#[path = "2022/mod.rs"]
-pub mod year22;
-#[path = "2023/mod.rs"]
-pub mod year23;
-#[path = "2024/mod.rs"]
-pub mod year24;
+#[path = "utils/coord.rs"]
+pub mod coord;
+#[path = "utils/grid/mod.rs"]
+pub mod grid;
+#[path = "utils/graph.rs"]
+pub mod graph;
+#[path = "utils/direction.rs"]
+pub mod direction;

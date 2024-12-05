@@ -1,9 +1,9 @@
 use std::fs;
 use std::io;
 
-use crate::utils::coord::*;
-use crate::utils::grid::in_bounds;
-use crate::utils::grid::{coord::*, direction::*, in_ibounds};
+use aocutils::coord::*;
+use aocutils::grid::in_bounds;
+use aocutils::grid::{coord::*, direction::*, in_ibounds};
 
 const EXTRA_COLS: usize = 200;
 

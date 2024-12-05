@@ -1,6 +1,6 @@
 use std::ops::{Add, AddAssign, Sub, SubAssign};
 
-use crate::utils::coord::Coord;
+use crate::coord::Coord;
 
 /// Coordinate system for Grids (a.k.a Vec<Vec<T>>) with some
 /// utility functions and traits

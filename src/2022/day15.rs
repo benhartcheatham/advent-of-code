@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 
-use crate::utils::coord::*;
+use aocutils::coord::*;
 
 struct Sensor {
     coord: Coord,

@@ -1,10 +1,10 @@
 use std::fs;
 use std::io;
 
-use crate::utils::coord::Coord;
-use crate::utils::direction::Direction;
-use crate::utils::direction::DIRECTIONS;
-use crate::utils::grid::in_ibounds;
+use aocutils::coord::Coord;
+use aocutils::direction::Direction;
+use aocutils::direction::DIRECTIONS;
+use aocutils::grid::in_ibounds;
 
 fn search(grid: &Vec<Vec<char>>, mut coord: Coord, xdir: i64, ydir: i64, needle: &str) -> u64 {
     for ch in needle.chars() {

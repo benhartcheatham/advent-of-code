@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 use std::fs;
 use std::io;
 
-use crate::utils::graph::*;
+use aocutils::graph::*;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 struct ValveState {

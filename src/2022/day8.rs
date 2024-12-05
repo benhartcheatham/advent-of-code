@@ -1,8 +1,8 @@
 use std::fs;
 use std::io;
 
-use crate::utils::coord::Coord;
-use crate::utils::direction::Direction;
+use aocutils::coord::Coord;
+use aocutils::direction::Direction;
 
 #[derive(Debug)]
 struct Tree {

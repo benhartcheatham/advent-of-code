@@ -3,7 +3,7 @@ use std::{
     fmt::Debug,
 };
 use super::{in_bounds, direction::GridDirection, coord::GridCoord};
-use crate::utils::coord::Coord;
+use crate::coord::Coord;
 
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

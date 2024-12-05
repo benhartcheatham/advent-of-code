@@ -1,9 +1,9 @@
 use std::fs;
 use std::io;
 
-use crate::utils::coord::Coord;
-use crate::utils::direction::*;
-use crate::utils::grid::direction::GridDirection;
+use aocutils::coord::Coord;
+use aocutils::direction::*;
+use aocutils::grid::direction::GridDirection;
 
 fn move_head(mut hdx: (i64, i64), dir: Direction) -> (i64, i64) {
     use Direction::*;

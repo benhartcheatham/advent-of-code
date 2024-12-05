@@ -4,8 +4,9 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 
-static DAYS: [fn() -> io::Result<()>; 4] = [day1::run, day2::run, day3::run, day4::run];
+static DAYS: [fn() -> io::Result<()>; 5] = [day1::run, day2::run, day3::run, day4::run, day5::run];
 
 fn run_all() {
     for i in 0..(DAYS.len() - 1) {

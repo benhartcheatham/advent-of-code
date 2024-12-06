@@ -4,7 +4,7 @@ use std::io;
 use aocutils::coord::Coord;
 use aocutils::direction::*;
 use aocutils::grid::direction::GridDirection;
-use aocutils::timing;
+use aocutils::timing::Timer;
 
 fn move_head(mut hdx: (i64, i64), dir: Direction) -> (i64, i64) {
     use Direction::*;
@@ -124,12 +124,10 @@ fn part2(input: &str) {
 
 pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day9.txt")?;
-    let mut timer = timing::start_benchmark(benchmark);
+    let mut timer = Timer::new(benchmark);
 
-    part1(&input);
-    timing::print_time(&mut timer);
-    part2(&input);
-    timing::print_time(&mut timer);
+    timer.time(part1, &input);
+    timer.time(part2, &input);
 
     Ok(())
 }

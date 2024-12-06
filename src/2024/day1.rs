@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 
-use aocutils::timing;
+use aocutils::timing::Timer;
 
 fn part1(input: &str) {
     let mut left = Vec::new();
@@ -60,12 +60,10 @@ fn part2(input: &str) {
 
 pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day1.txt")?;
-    let mut timer = timing::start_benchmark(benchmark);
+    let mut timer = Timer::new(benchmark);
 
-    part1(&input);
-    timing::print_time(&mut timer);
-    part2(&input);
-    timing::print_time(&mut timer);
+    timer.time(part1, &input);
+    timer.time(part2, &input);
 
     Ok(())
 }

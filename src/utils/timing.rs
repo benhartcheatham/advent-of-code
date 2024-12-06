@@ -1,34 +1,37 @@
 use std::time::Instant;
 
 pub struct Timer {
-    start: Instant,
+    start: Option<Instant>,
+    print: bool,
 }
 
 impl Timer {
-    fn start() -> Self {
+    pub fn new(print: bool) -> Self {
+        Timer { start: None, print }
+    }
+
+    pub fn start(print: bool) -> Self {
         Timer {
-            start: Instant::now(),
+            start: Some(Instant::now()),
+            print,
         }
     }
 
-    fn reset(&mut self) {
-        self.start = Instant::now()
-    }
-}
-
-pub fn start_benchmark(b: bool) -> Option<Timer> {
-    if b {
-        Some(Timer::start())
-    } else {
-        None
-    }
-}
-
-pub fn print_time(timer: &mut Option<Timer>) {
-    if let Some(timer) = timer {
-        print!(" (Ran in {:.2?})", timer.start.elapsed());
-        timer.reset();
+    pub fn reset(&mut self) {
+        self.start = Some(Instant::now());
     }
 
-    println!();
+    pub fn time<F: FnOnce(&str)>(&mut self, f: F, arg: &str) {
+        self.reset();
+        f(arg);
+        self.print();
+    }
+
+    pub fn print(&mut self) {
+        if let Some(start) = self.start {
+            if self.print {
+                println!(" (Ran in {:.2?})", start.elapsed());
+            }
+        }
+    }
 }

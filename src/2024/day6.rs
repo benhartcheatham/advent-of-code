@@ -4,9 +4,20 @@ use std::io;
 use aocutils::coord::Coord;
 use aocutils::grid::in_bounds;
 use aocutils::grid::{coord::GridCoord, direction::GridDirection, in_ibounds};
-use aocutils::timing;
+use aocutils::timing::Timer;
 
 use std::collections::HashMap;
+
+fn dir_to_usize(dir: GridDirection) -> usize {
+    use GridDirection::*;
+
+    match dir {
+        Up => 0,
+        Down => 1,
+        Left => 2,
+        Right => 3,
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
 struct Guard {
@@ -19,7 +30,7 @@ impl Guard {
         Guard { pos, dir }
     }
 
-    fn simulate(&mut self, grid: &Vec<Vec<char>>) -> usize {
+    fn simulate(&mut self, grid: &Vec<Vec<char>>) -> Vec<Vec<bool>> {
         let mut visited: Vec<Vec<bool>> = Vec::new();
 
         for _ in 0..grid.len() {
@@ -43,23 +54,28 @@ impl Guard {
         }
 
         visited
-            .into_iter()
-            .map(|v| v.into_iter().filter(|e| *e).count())
-            .sum::<usize>()
     }
 
     fn simulate_loop(&mut self, grid: &Vec<Vec<char>>) -> bool {
-        let mut past: HashMap<Coord, Vec<GridDirection>> = HashMap::new();
+        let mut past: Vec<Vec<[bool; 4]>> = Vec::new();
+
+        for i in 0..grid.len() {
+            past.push(vec![[false; 4]; grid[i].len()]);
+        }
 
         while in_ibounds(grid, self.pos) {
-            if let Some(dirs) = past.get_mut(&self.pos) {
-                if dirs.iter().any(|d| *d == self.dir) {
-                    return true;
-                }
+            let idx = dir_to_usize(self.dir);
+            let (x, y) = match GridCoord::from_coord(self.pos) {
+                Some(t) => t,
+                _ => continue,
+            }
+            .into();
+            let dirs = past.get_mut(x).unwrap().get_mut(y).unwrap();
 
-                dirs.push(self.dir);
+            if dirs[idx] {
+                return true;
             } else {
-                past.insert(self.pos, vec![self.dir]);
+                dirs[idx] = true;
             }
 
             match GridCoord::from_coord(self.pos + self.dir.into()) {
@@ -95,7 +111,14 @@ fn part1(input: &str) {
         }
     }
 
-    print!("part1: {}", guard.simulate(&grid));
+    print!(
+        "part1: {}",
+        guard
+            .simulate(&grid)
+            .into_iter()
+            .map(|v| v.into_iter().filter(|e| *e).count())
+            .sum::<usize>()
+    );
 }
 
 fn part2(input: &str) {
@@ -115,19 +138,21 @@ fn part2(input: &str) {
         }
     }
 
+    let visited = guard.clone().simulate(&grid);
     let mut cnt = 0;
     for i in 0..grid.len() {
         for j in 0..grid[0].len() {
-            if grid[i][j] == '#' {
+            if grid[i][j] == '#' || !visited[i][j] {
                 continue;
             }
 
-            let mut temp = grid.clone();
-            temp[i][j] = '#';
+            grid[i][j] = '#';
 
-            if guard.clone().simulate_loop(&temp) {
+            if guard.clone().simulate_loop(&grid) {
                 cnt += 1;
             }
+
+            grid[i][j] = '.';
         }
     }
 
@@ -136,11 +161,10 @@ fn part2(input: &str) {
 
 pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day6.txt")?;
-    let mut timer = timing::start_benchmark(benchmark);
+    let mut timer = Timer::new(benchmark);
 
-    part1(&input);
-    timing::print_time(&mut timer);
-    part2(&input);
-    timing::print_time(&mut timer);
+    timer.time(part1, &input);
+    timer.time(part2, &input);
+
     Ok(())
 }

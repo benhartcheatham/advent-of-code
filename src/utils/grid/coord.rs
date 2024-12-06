@@ -36,11 +36,11 @@ impl GridCoord {
     }
 
     pub fn from_coord(coord: Coord) -> Option<Self> {
-        if coord.x < 0 || coord.y < 0 {
-            None
-        } else {
-            Some(Self::new(coord.x as usize, coord.y as usize))
-        }
+        coord.into()
+    }
+
+    pub fn to_coord(&self) -> Option<Coord> {
+        (*self).into()
     }
 }
 
@@ -70,6 +70,17 @@ impl From<GridCoord> for Option<Coord> {
             None
         } else {
             Some(Coord::new(value.x as i64, value.y as i64))
+        }
+    }
+}
+
+/// Only fails when the Coord has one or more negative coordinates
+impl From<Coord> for Option<GridCoord> {
+    fn from(value: Coord) -> Self {
+        if value.x < 0 || value.y < 0 {
+            None
+        } else {
+            Some(GridCoord::new(value.x as usize, value.y as usize))
         }
     }
 }

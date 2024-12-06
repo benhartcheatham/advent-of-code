@@ -10,12 +10,47 @@ pub const DIRECTIONS: [GridDirection; 4] = [
     GridDirection::Right,
 ];
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum GridDirection {
     Up,
     Down,
     Left,
     Right,
+}
+
+impl GridDirection {
+    pub fn invert(&self) -> Self {
+        use GridDirection::*;
+
+        match self {
+            Up => Down,
+            Down => Up,
+            Left => Right,
+            Right => Left,
+        }
+    }
+
+    pub fn rotate_right(&self) -> Self {
+        use GridDirection::*;
+
+        match self {
+            Up => Right,
+            Right => Down,
+            Down => Left,
+            Left => Up,
+        }
+    }
+
+    pub fn rotate_left(&self) -> Self {
+        use GridDirection::*;
+
+        match self {
+            Up => Left,
+            Left => Down,
+            Down => Right,
+            Right => Up,
+        }
+    }
 }
 
 impl From<GridDirection> for i64 {
@@ -34,10 +69,10 @@ impl From<GridDirection> for Coord {
         use GridDirection::*;
 
         match value {
-            Up => Coord::new(0, -1),
-            Down => Coord::new(0, 1),
-            Left => Coord::new(-1, 0),
-            Right => Coord::new(1, 0),
+            Up => Coord::new(-1, 0),
+            Down => Coord::new(1, 0),
+            Left => Coord::new(0, -1),
+            Right => Coord::new(0, 1),
         }
     }
 }
@@ -70,19 +105,6 @@ impl FromStr for GridDirection {
             "u" | "up" => Ok(Up),
             "d" | "down" => Ok(Down),
             _ => Err(DirectionParseError),
-        }
-    }
-}
-
-impl GridDirection {
-    pub fn invert(&self) -> GridDirection {
-        use GridDirection::*;
-
-        match self {
-            Up => Down,
-            Down => Up,
-            Left => Right,
-            Right => Left,
         }
     }
 }

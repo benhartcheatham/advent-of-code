@@ -3,7 +3,7 @@ use std::fs;
 use std::io;
 use std::io::Error;
 
-use aocutils::timing;
+use aocutils::timing::Timer;
 
 fn part1(input: &str) -> io::Result<()> {
     let mut last_chars: VecDeque<char> = VecDeque::new();
@@ -45,12 +45,13 @@ fn part2(input: &str) -> io::Result<()> {
 
 pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day6.txt")?;
-    let mut timer = timing::start_benchmark(benchmark);
+    let mut timer = Timer::start(benchmark);
 
     part1(&input)?;
-    timing::print_time(&mut timer);
+    timer.print();
+    timer.reset();
     part2(&input)?;
-    timing::print_time(&mut timer);
+    timer.print();
 
     Ok(())
 }

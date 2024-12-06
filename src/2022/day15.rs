@@ -3,7 +3,7 @@ use std::fs;
 use std::io;
 
 use aocutils::coord::*;
-use aocutils::timing;
+use aocutils::timing::Timer;
 
 struct Sensor {
     coord: Coord,
@@ -174,12 +174,13 @@ fn part2(input: &str, low: Coord, high: Coord) {
 
 pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day15.txt")?;
-    let mut timer = timing::start_benchmark(benchmark);
+    let mut timer = Timer::start(benchmark);
 
     part1(&input, 2_000_000);
-    timing::print_time(&mut timer);
+    timer.print();
+    timer.reset();
     part2(&input, Coord::new(0, 0), Coord::new(4_000_000, 4_000_000));
-    timing::print_time(&mut timer);
+    timer.print();
 
     Ok(())
 }

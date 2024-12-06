@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 
+use aocutils::timing;
+
 fn part1(input: &str) {
     let mut left = Vec::new();
     let mut right = Vec::new();
@@ -18,7 +20,7 @@ fn part1(input: &str) {
 
     left.sort();
     right.sort();
-    println!(
+    print!(
         "part1: {}",
         left.iter()
             .zip(right.iter())
@@ -53,13 +55,17 @@ fn part2(input: &str) {
         }
     }
 
-    println!("part2: {}", map.values().sum::<i64>());
+    print!("part2: {}", map.values().sum::<i64>());
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day1.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
+
     Ok(())
 }

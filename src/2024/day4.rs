@@ -5,6 +5,7 @@ use aocutils::coord::Coord;
 use aocutils::direction::Direction;
 use aocutils::direction::DIRECTIONS;
 use aocutils::grid::in_ibounds;
+use aocutils::timing;
 
 fn search(grid: &Vec<Vec<char>>, mut coord: Coord, xdir: i64, ydir: i64, needle: &str) -> u64 {
     for ch in needle.chars() {
@@ -85,7 +86,7 @@ fn part1(input: &str) {
         }
     }
 
-    println!("part1: {}", cnt);
+    print!("part1: {}", cnt);
 }
 
 fn part2(input: &str) {
@@ -102,13 +103,16 @@ fn part2(input: &str) {
         }
     }
 
-    println!("part2: {}", cnt);
+    print!("part2: {}", cnt);
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day4.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
     Ok(())
 }

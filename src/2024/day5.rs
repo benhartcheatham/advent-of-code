@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 
+use aocutils::timing;
+
 fn validate_pages(rules: &HashMap<usize, Vec<usize>>, pages: &Vec<usize>) -> usize {
     let mut printed = [false; 100];
 
@@ -86,7 +88,7 @@ fn parse_input(input: &str) -> (HashMap<usize, Vec<usize>>, Vec<Vec<usize>>) {
 fn part1(input: &str) {
     let (rules, pages) = parse_input(input);
 
-    println!(
+    print!(
         "part1: {}",
         pages
             .iter()
@@ -98,16 +100,19 @@ fn part1(input: &str) {
 fn part2(input: &str) {
     let (rules, pages) = parse_input(input);
 
-    println!(
+    print!(
         "part2: {}",
         pages.iter().map(|p| fix_pages(&rules, p)).sum::<usize>()
     );
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day5.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
     Ok(())
 }

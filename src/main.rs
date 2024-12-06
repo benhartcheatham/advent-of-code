@@ -30,6 +30,9 @@ enum Commands {
         // day to run
         #[arg(short, long)]
         day: Option<usize>,
+        // time the solution
+        #[arg(long, action)]
+        nobenchmark: bool,
     },
     // Set up a template file for <year> <day>. Also puts the puzzle input in
     // inputs/<year>/day<day>.txt
@@ -53,7 +56,7 @@ async fn main() -> io::Result<()> {
     let args = Args::parse();
 
     match &args.command {
-        Some(Commands::Run { year, day }) => run(year, *day),
+        Some(Commands::Run { year, day, nobenchmark }) => run(year, *day, !*nobenchmark),
         Some(Commands::Create {
             year,
             day,
@@ -161,11 +164,11 @@ async fn send_request(client: &Client, session: &str, url: &str) -> Option<Strin
     }
 }
 
-fn run(year: &str, day: Option<usize>) -> io::Result<()> {
+fn run(year: &str, day: Option<usize>, benchmark: bool) -> io::Result<()> {
     match year {
         "2022" => year22::run(day),
         "2023" => year23::run(day),
-        "2024" => year24::run(day),
+        "2024" => year24::run(day, benchmark),
         _ => Ok(()),
     }
 }

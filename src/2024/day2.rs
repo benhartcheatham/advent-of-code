@@ -1,6 +1,8 @@
 use std::fs;
 use std::io;
 
+use aocutils::timing;
+
 fn check_safety(level: &Vec<i64>) -> bool {
     let increasing = level[0] < level[1];
 
@@ -26,7 +28,7 @@ fn part1(input: &str) {
         );
     }
 
-    println!(
+    print!(
         "part1: {}",
         levels.iter().filter(|l| check_safety(l)).count()
     );
@@ -62,14 +64,17 @@ fn part2(input: &str) {
         }
     }
 
-    println!("part2: {}", count);
+    print!("part2: {}", count);
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day2.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

@@ -6,3 +6,5 @@ pub mod grid;
 pub mod graph;
 #[path = "utils/direction.rs"]
 pub mod direction;
+#[path = "utils/timing.rs"]
+pub mod timing;

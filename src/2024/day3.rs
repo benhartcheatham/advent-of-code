@@ -1,6 +1,7 @@
 use std::fs;
 use std::io;
 
+use aocutils::timing;
 use regex::Regex;
 
 fn part1(input: &str) {
@@ -11,7 +12,7 @@ fn part1(input: &str) {
         ret += n1.parse::<i64>().unwrap() * n2.parse::<i64>().unwrap();
     }
 
-    println!("part1: {}", ret);
+    print!("part1: {}", ret);
 }
 
 fn part2(input: &str) {
@@ -39,13 +40,16 @@ fn part2(input: &str) {
         }
     }
 
-    println!("part2: {}", ret);
+    print!("part2: {}", ret);
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day3.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
     Ok(())
 }

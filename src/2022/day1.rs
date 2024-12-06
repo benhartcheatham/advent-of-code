@@ -1,6 +1,8 @@
 use std::fs;
 use std::io;
 
+use aocutils::timing;
+
 fn replace_min(maxes: &mut [u32], val: u32) {
     let (idx, min) = maxes
         .iter()
@@ -26,7 +28,7 @@ fn part1(input: &str) {
         }
     }
 
-    println!("part1: {}", highest);
+    print!("part1: {}", highest);
 }
 
 #[allow(unused)]
@@ -44,14 +46,17 @@ fn part2(input: &str) {
     }
 
     replace_min(&mut highest, current);
-    println!("part2: {}", highest.iter().sum::<u32>());
+    print!("part2: {}", highest.iter().sum::<u32>());
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day1.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

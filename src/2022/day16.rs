@@ -3,6 +3,7 @@ use std::fs;
 use std::io;
 
 use aocutils::graph::*;
+use aocutils::timing;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 struct ValveState {
@@ -143,7 +144,7 @@ fn part1(input: &str) {
     }
 
     graph = prune_graph(graph);
-    println!(
+    print!(
         "part1: {}",
         calc_pressure(graph.find_vertex_by_label("AA").unwrap(), 30, &graph).0
     );
@@ -192,13 +193,17 @@ fn part2(input: &str) {
         }
     }
 
-    println!("part2: {}", max);
+    print!("part2: {}", max);
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day16.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
+
     Ok(())
 }

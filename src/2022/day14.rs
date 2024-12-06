@@ -4,6 +4,7 @@ use std::io;
 use aocutils::coord::*;
 use aocutils::grid::in_bounds;
 use aocutils::grid::{coord::*, direction::*, in_ibounds};
+use aocutils::timing;
 
 const EXTRA_COLS: usize = 200;
 
@@ -148,7 +149,7 @@ fn part1(input: &str) {
         }
     }
 
-    println!(
+    print!(
         "part1: {}",
         grid.into_iter()
             .map(|r| r.into_iter().filter(|c| *c == Cell::Sand).count())
@@ -184,7 +185,7 @@ fn part2(input: &str) {
         }
     }
 
-    println!(
+    print!(
         "part2: {}",
         grid.iter()
             .map(|r| r.iter().filter(|c| **c == Cell::Sand).count())
@@ -192,11 +193,14 @@ fn part2(input: &str) {
     );
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day14.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

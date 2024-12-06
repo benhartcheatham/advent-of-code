@@ -3,6 +3,8 @@ use std::collections::VecDeque;
 use std::fs;
 use std::io;
 
+use aocutils::timing;
+
 type MonkeyOp = fn(u64, Option<u64>) -> u64;
 
 #[derive(Debug)]
@@ -142,7 +144,7 @@ fn part1(input: &str) {
     monkeys.sort_by_key(|m| m.get_num_inspected());
     let business = monkeys[monkeys.len() - 1].get_num_inspected()
         * monkeys[monkeys.len() - 2].get_num_inspected();
-    println!("part1: {}", business);
+    print!("part1: {}", business);
 }
 
 fn part2(input: &str) {
@@ -164,14 +166,17 @@ fn part2(input: &str) {
     monkeys.sort_by_key(|m| m.get_num_inspected());
     let business = monkeys[monkeys.len() - 1].get_num_inspected()
         * monkeys[monkeys.len() - 2].get_num_inspected();
-    println!("part2: {}", business);
+    print!("part2: {}", business);
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day11.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

@@ -4,6 +4,7 @@ use std::collections::VecDeque;
 
 use aocutils::coord::*;
 use aocutils::direction::*;
+use aocutils::timing;
 
 #[derive(Debug)]
 struct Space {
@@ -198,7 +199,7 @@ fn part1(input: &str) {
         n_rocks += 1;
     }
 
-    println!("part1: {}", space.get_highest());
+    print!("part1: {}", space.get_highest());
 }
 
 #[allow(unused)]
@@ -231,13 +232,17 @@ fn part2(input: &str) {
         n_rocks += 1;
     }
 
-    println!("part2: {}", space.get_highest());
+    print!("part2: {}", space.get_highest());
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day17.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     // part2(&input);
+    // timing::print_time(&mut timer);
+    //
     Ok(())
 }

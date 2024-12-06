@@ -3,6 +3,8 @@ use std::fmt::Display;
 use std::fs;
 use std::io;
 
+use aocutils::timing;
+
 #[derive(Debug, Clone, Eq)]
 enum ListItem {
     List(Vec<ListItem>),
@@ -122,7 +124,7 @@ fn part1(input: &str) {
         i += 1;
     }
 
-    println!(
+    print!(
         "part1: {}",
         packets
             .iter()
@@ -150,7 +152,7 @@ fn part2(input: &str) {
 
     packets.sort();
 
-    println!(
+    print!(
         "part2: {}",
         packets
             .iter()
@@ -164,11 +166,14 @@ fn part2(input: &str) {
     );
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day13.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

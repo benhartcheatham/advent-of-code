@@ -4,6 +4,8 @@ use std::io;
 use std::rc::Rc;
 use std::rc::Weak;
 
+use aocutils::timing;
+
 struct File {
     name: String,
     size: usize,
@@ -133,7 +135,7 @@ fn part1(input: &str) {
     parse_input(&root, input);
 
     root.borrow_mut().update_size();
-    println!("part1: {}", part1_helper(&root, 100_000));
+    print!("part1: {}", part1_helper(&root, 100_000));
 }
 
 fn part2_helper(root: &Rc<RefCell<Dir>>, size: usize) -> usize {
@@ -160,14 +162,17 @@ fn part2(input: &str) {
 
     root.borrow_mut().update_size();
     let size_needed = 30_000_000 - (70_000_000 - root.borrow().size);
-    println!("part2: {}", part2_helper(&root, size_needed));
+    print!("part2: {}", part2_helper(&root, size_needed));
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day7.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

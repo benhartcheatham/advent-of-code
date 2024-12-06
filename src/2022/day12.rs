@@ -2,6 +2,7 @@ use std::fs;
 use std::io;
 
 use aocutils::grid::{algo::*, coord::*};
+use aocutils::timing;
 
 fn cost_fn(grid: &[Vec<u8>], u: GridCoord, v: GridCoord) -> i64 {
     let (ux, uy) = u.into();
@@ -85,11 +86,14 @@ fn part2(input: &str) {
     );
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day12.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

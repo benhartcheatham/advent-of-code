@@ -2,6 +2,8 @@ use std::collections::HashSet;
 use std::fs;
 use std::io;
 
+use aocutils::timing;
+
 fn part1(input: &str) {
     let mut sum: u64 = 0;
 
@@ -20,7 +22,7 @@ fn part1(input: &str) {
             .sum::<u64>();
     }
 
-    println!("part1: {}", sum);
+    print!("part1: {}", sum);
 }
 
 #[allow(unused)]
@@ -46,14 +48,17 @@ fn part2(input: &str) {
         }
     }
 
-    println!("part2: {}", sum);
+    print!("part2: {}", sum);
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day3.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

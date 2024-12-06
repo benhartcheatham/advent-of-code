@@ -166,7 +166,7 @@ async fn send_request(client: &Client, session: &str, url: &str) -> Option<Strin
 
 fn run(year: &str, day: Option<usize>, benchmark: bool) -> io::Result<()> {
     match year {
-        "2022" => year22::run(day),
+        "2022" => year22::run(day, benchmark),
         "2023" => year23::run(day),
         "2024" => year24::run(day, benchmark),
         _ => Ok(()),

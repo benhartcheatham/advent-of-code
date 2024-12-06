@@ -2,7 +2,8 @@ use std::fs;
 use std::io;
 
 use aocutils::coord::Coord;
-use aocutils::direction::Direction;
+use aocutils::grid::direction::GridDirection;
+use aocutils::timing;
 
 #[derive(Debug)]
 struct Tree {
@@ -21,8 +22,8 @@ impl Tree {
     }
 }
 
-fn mark_visible(grid: &mut Vec<Vec<Tree>>, start: (i64, i64), dir: Direction, mut max: u8) {
-    use Direction::*;
+fn mark_visible(grid: &mut Vec<Vec<Tree>>, start: (i64, i64), dir: GridDirection, mut max: u8) {
+    use GridDirection::*;
 
     let idx = (start.0 as usize, start.1 as usize);
     if idx.0 >= grid.len() || idx.1 >= grid.len() {
@@ -35,9 +36,8 @@ fn mark_visible(grid: &mut Vec<Vec<Tree>>, start: (i64, i64), dir: Direction, mu
     }
 
     match dir {
-        N | S => mark_visible(grid, (Into::<Coord>::into(dir).x + start.0, start.1), dir, max),
-        W | E => mark_visible(grid, (start.0, Into::<Coord>::into(dir).y + start.1), dir, max),
-        _ => panic!("Invalid direction: {:?}", dir),
+        Up | Down => mark_visible(grid, (Into::<Coord>::into(dir).x + start.0, start.1), dir, max),
+        Left | Right => mark_visible(grid, (start.0, Into::<Coord>::into(dir).y + start.1), dir, max),
     }
 }
 
@@ -98,22 +98,20 @@ fn part1(input: &str) {
         grid.push(row);
     }
 
-    // TODO: Verify this is right, i substituted the GridDirections with flipped
-    // Directions (Up -> S, Down -> N, etc.)
     let clen = grid[0].len() as i64;
     for i in 0..grid.len() {
-        mark_visible(&mut grid, (i as i64, 0), Direction::W, 0);
-        mark_visible(&mut grid, (i as i64, clen - 1), Direction::E, 0);
+        mark_visible(&mut grid, (i as i64, 0), GridDirection::Right, 0);
+        mark_visible(&mut grid, (i as i64, clen - 1), GridDirection::Left, 0);
     }
 
     for i in 0..clen {
         let len = (grid.len() - 1) as i64;
 
-        mark_visible(&mut grid, (0, i), Direction::N, 0);
-        mark_visible(&mut grid, (len, i), Direction::S, 0);
+        mark_visible(&mut grid, (0, i), GridDirection::Down, 0);
+        mark_visible(&mut grid, (len, i), GridDirection::Up, 0);
     }
 
-    println!(
+    print!(
         "part1: {}",
         grid.iter()
             .map(|r| r.iter().filter(|t| t.is_visible).count())
@@ -140,7 +138,7 @@ fn part2(input: &str) {
         }
     }
 
-    println!(
+    print!(
         "part2: {}",
         grid.iter()
             .map(|r| r.iter().map(|t| t.scenic_score).max().unwrap())
@@ -149,11 +147,14 @@ fn part2(input: &str) {
     );
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day8.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

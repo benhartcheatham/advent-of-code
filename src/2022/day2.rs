@@ -1,6 +1,8 @@
 use std::fs;
 use std::io;
 
+use aocutils::timing;
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum Shapes {
     Rock,
@@ -104,7 +106,7 @@ fn part1(input: &str) {
         rounds.push(round);
     }
 
-    println!("part1: {}", rounds.iter().map(|r| r.score).sum::<u64>());
+    print!("part1: {}", rounds.iter().map(|r| r.score).sum::<u64>());
 }
 
 fn part2(input: &str) {
@@ -119,14 +121,17 @@ fn part2(input: &str) {
         rounds.push(round);
     }
 
-    println!("part2: {}", rounds.iter().map(|r| r.score).sum::<u64>());
+    print!("part2: {}", rounds.iter().map(|r| r.score).sum::<u64>());
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day2.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

@@ -3,6 +3,8 @@ use std::fs;
 use std::io;
 use std::io::Error;
 
+use aocutils::timing;
+
 fn part1(input: &str) -> io::Result<()> {
     let mut last_chars: VecDeque<char> = VecDeque::new();
 
@@ -11,7 +13,7 @@ fn part1(input: &str) -> io::Result<()> {
 
         if last_chars.len() == 4 {
             if HashSet::<&char>::from_iter(last_chars.iter()).len() == 4 {
-                println!("part1: {}", i + 1);
+                print!("part1: {}", i + 1);
                 return Ok(());
             }
 
@@ -30,7 +32,7 @@ fn part2(input: &str) -> io::Result<()> {
 
         if last_chars.len() == 14 {
             if HashSet::<&char>::from_iter(last_chars.iter()).len() == 14 {
-                println!("part2: {}", i + 1);
+                print!("part2: {}", i + 1);
                 return Ok(());
             }
 
@@ -41,11 +43,14 @@ fn part2(input: &str) -> io::Result<()> {
     Err(Error::new(io::ErrorKind::InvalidData, ""))
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day6.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input)?;
+    timing::print_time(&mut timer);
     part2(&input)?;
+    timing::print_time(&mut timer);
 
     Ok(())
 }

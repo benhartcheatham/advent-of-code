@@ -2,6 +2,8 @@ use std::fs;
 use std::io;
 use std::str::FromStr;
 
+use aocutils::timing;
+
 #[derive(Debug, PartialEq)]
 enum Instructions {
     Addx,
@@ -117,7 +119,7 @@ fn part1(input: &str) {
         }
     }
 
-    println!(
+    print!(
         "part1: {}",
         cpu.signals.iter().step_by(2).take(6).sum::<i64>()
     );
@@ -147,11 +149,14 @@ fn part2(input: &str) {
     }
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day10.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input);
+    timing::print_time(&mut timer);
     part2(&input);
+    timing::print_time(&mut timer);
 
     Ok(())
 }

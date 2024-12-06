@@ -3,6 +3,7 @@ use std::fs;
 use std::io;
 
 use aocutils::coord::*;
+use aocutils::timing;
 
 struct Sensor {
     coord: Coord,
@@ -29,9 +30,7 @@ impl Sensor {
             return Vec::new();
         }
 
-        for i in
-            (self.coord.x - self.radius as i64)..=(self.coord.x + self.radius as i64)
-        {
+        for i in (self.coord.x - self.radius as i64)..=(self.coord.x + self.radius as i64) {
             let coord = Coord::new(i, row);
 
             if self.in_radius(&coord) {
@@ -50,17 +49,11 @@ impl Sensor {
         );
 
         for i in 0..=((hy - ly) / 2) {
-            cover.insert(
-                ly + i,
-                Coord::new(self.coord.x - i, self.coord.x + i),
-            );
+            cover.insert(ly + i, Coord::new(self.coord.x - i, self.coord.x + i));
         }
 
         for i in 0..((hy - ly) / 2) {
-            cover.insert(
-                hy - i,
-                Coord::new(self.coord.x - i, self.coord.x + i),
-            );
+            cover.insert(hy - i, Coord::new(self.coord.x - i, self.coord.x + i));
         }
 
         cover
@@ -179,11 +172,14 @@ fn part2(input: &str, low: Coord, high: Coord) {
     }
 }
 
-pub fn run() -> io::Result<()> {
+pub fn run(benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day15.txt")?;
+    let mut timer = timing::start_benchmark(benchmark);
 
     part1(&input, 2_000_000);
+    timing::print_time(&mut timer);
     part2(&input, Coord::new(0, 0), Coord::new(4_000_000, 4_000_000));
+    timing::print_time(&mut timer);
 
     Ok(())
 }

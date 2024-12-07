@@ -6,8 +6,6 @@ use aocutils::grid::in_bounds;
 use aocutils::grid::{coord::GridCoord, direction::GridDirection, in_ibounds};
 use aocutils::timing::Timer;
 
-use std::collections::HashMap;
-
 fn dir_to_usize(dir: GridDirection) -> usize {
     use GridDirection::*;
 

@@ -100,7 +100,7 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
     grid
 }
 
-fn drop_in_bounds(grid: &Vec<Vec<Cell>>, c: GridCoord) -> bool {
+fn drop_in_bounds(grid: &[Vec<Cell>], c: GridCoord) -> bool {
     use GridDirection::*;
 
     let below = Coord::new(c.x as i64, c.y as i64) + Down.into();

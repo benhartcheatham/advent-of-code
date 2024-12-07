@@ -28,7 +28,7 @@ impl Guard {
         Guard { pos, dir }
     }
 
-    fn simulate(&mut self, grid: &Vec<Vec<char>>) -> Vec<Vec<bool>> {
+    fn simulate(&mut self, grid: &[Vec<char>]) -> Vec<Vec<bool>> {
         let mut visited: Vec<Vec<bool>> = Vec::new();
 
         for _ in 0..grid.len() {

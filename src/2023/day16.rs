@@ -112,7 +112,7 @@ impl LightBeam {
         };
     }
 
-    fn update(&mut self, tiles: &mut Vec<Vec<Tile>>) -> Option<LightBeam> {
+    fn update(&mut self, tiles: &mut [Vec<Tile>]) -> Option<LightBeam> {
         if self.cleanup {
             return None;
         }

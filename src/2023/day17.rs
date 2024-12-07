@@ -103,7 +103,7 @@ impl Vertex {
         (self.row, self.col)
     }
 
-    fn can_turn(&self, turn_dir: Direction, weights: &Vec<Vec<u64>>) -> bool {
+    fn can_turn(&self, turn_dir: Direction, weights: &[Vec<u64>]) -> bool {
         use Direction::*;
 
         if self.steps < 4 {

@@ -78,7 +78,7 @@ impl LightBeam {
         }
     }
 
-    fn update_position(&mut self, tiles: &Vec<Vec<Tile>>) {
+    fn update_position(&mut self, tiles: &[Vec<Tile>]) {
         match self.direction {
             (-1, 0) => {
                 if self.pos.0 == 0 {

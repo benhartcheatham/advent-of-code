@@ -57,8 +57,8 @@ impl Guard {
     fn simulate_loop(&mut self, grid: &Vec<Vec<char>>) -> bool {
         let mut past: Vec<Vec<[bool; 4]>> = Vec::new();
 
-        for i in 0..grid.len() {
-            past.push(vec![[false; 4]; grid[i].len()]);
+        for r in grid {
+            past.push(vec![[false; 4]; r.len()]);
         }
 
         while in_ibounds(grid, self.pos) {

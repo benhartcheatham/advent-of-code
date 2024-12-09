@@ -3,7 +3,7 @@ use std::io;
 
 use aocutils::timing::Timer;
 
-fn check_safety(level: &Vec<i64>) -> bool {
+fn check_safety(level: &[i64]) -> bool {
     let increasing = level[0] < level[1];
 
     for i in 0..(level.len() - 1) {

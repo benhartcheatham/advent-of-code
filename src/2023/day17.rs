@@ -103,7 +103,7 @@ impl Vertex {
         (self.row, self.col)
     }
 
-    fn can_turn(&self, turn_dir: Direction, weights: &Vec<Vec<u64>>) -> bool {
+    fn can_turn(&self, turn_dir: Direction, weights: &[Vec<u64>]) -> bool {
         use Direction::*;
 
         if self.steps < 4 {
@@ -212,7 +212,7 @@ pub fn run() -> Result<(), io::Error> {
     Ok(())
 }
 
-fn find_path(start: (usize, usize), target: (usize, usize), weights: &Vec<Vec<u64>>) -> u64 {
+fn find_path(start: (usize, usize), target: (usize, usize), weights: &[Vec<u64>]) -> u64 {
     let mut queue: BinaryHeap<Vertex> = BinaryHeap::new();
     let mut dist: HashMap<(usize, usize), u64> = HashMap::new();
     let mut seen: HashSet<((usize, usize), Direction, usize)> = HashSet::new();

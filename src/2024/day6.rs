@@ -6,8 +6,6 @@ use aocutils::grid::in_bounds;
 use aocutils::grid::{coord::GridCoord, direction::GridDirection, in_ibounds};
 use aocutils::timing::Timer;
 
-use std::collections::HashMap;
-
 fn dir_to_usize(dir: GridDirection) -> usize {
     use GridDirection::*;
 
@@ -30,7 +28,7 @@ impl Guard {
         Guard { pos, dir }
     }
 
-    fn simulate(&mut self, grid: &Vec<Vec<char>>) -> Vec<Vec<bool>> {
+    fn simulate(&mut self, grid: &[Vec<char>]) -> Vec<Vec<bool>> {
         let mut visited: Vec<Vec<bool>> = Vec::new();
 
         for _ in 0..grid.len() {
@@ -57,11 +55,20 @@ impl Guard {
     }
 
     fn simulate_loop(&mut self, grid: &Vec<Vec<char>>) -> bool {
-        let mut past: HashMap<Coord, [bool; 4]> = HashMap::new();
+        let mut past: Vec<Vec<[bool; 4]>> = Vec::new();
+
+        for r in grid {
+            past.push(vec![[false; 4]; r.len()]);
+        }
 
         while in_ibounds(grid, self.pos) {
             let idx = dir_to_usize(self.dir);
-            let dirs = past.entry(self.pos).or_insert([false; 4]);
+            let (x, y) = match GridCoord::from_coord(self.pos) {
+                Some(t) => t,
+                _ => continue,
+            }
+            .into();
+            let dirs = past.get_mut(x).unwrap().get_mut(y).unwrap();
 
             if dirs[idx] {
                 return true;

@@ -38,7 +38,7 @@ pub type DjikstraCostFn<T> = fn(&[Vec<T>], GridCoord, GridCoord) -> i64;
 /// Takes in a starting and ending point and returns the shortest path between them
 #[allow(unused)]
 pub fn djikstra<T: Copy + Clone + Ord + Debug>(
-    grid: &Vec<Vec<T>>,
+    grid: &[Vec<T>],
     start: GridCoord,
     end: GridCoord,
     func: DjikstraCostFn<T>,

@@ -7,7 +7,7 @@ use aocutils::direction::DIRECTIONS;
 use aocutils::grid::in_ibounds;
 use aocutils::timing::Timer;
 
-fn search(grid: &Vec<Vec<char>>, mut coord: Coord, xdir: i64, ydir: i64, needle: &str) -> u64 {
+fn search(grid: &[Vec<char>], mut coord: Coord, xdir: i64, ydir: i64, needle: &str) -> u64 {
     for ch in needle.chars() {
         if !in_ibounds(grid, coord) {
             return 0;
@@ -24,7 +24,7 @@ fn search(grid: &Vec<Vec<char>>, mut coord: Coord, xdir: i64, ydir: i64, needle:
     1
 }
 
-fn search_cross(grid: &Vec<Vec<char>>, coord: Coord) -> u64 {
+fn search_cross(grid: &[Vec<char>], coord: Coord) -> u64 {
     if !in_ibounds(grid, coord) {
         return 0;
     }

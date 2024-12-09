@@ -20,6 +20,10 @@ impl Coord {
         Coord::new(self.x.signum(), self.y.signum())
     }
 
+    pub fn mult_scalar(&self, size: i64) -> Self {
+        Self::new(self.x * size, self.y * size)
+    }
+
     /// Gets a new Coord where each inner coordinate is
     /// the absolute value of this Coord
     pub fn abs(&self) -> Self {

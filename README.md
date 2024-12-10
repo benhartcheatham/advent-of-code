@@ -1,5 +1,8 @@
 My advent of code solutions.
 
-todos:
+TODOs:
 - TODO: add timing capabilites to year 2023
-- TODO: replace hardcoded input paths
+- TODO: Fixup/optimize Graph
+- TODO: Add BFS and DFS methods to Graph
+- TODO: Re-evaluate whether GridCoord is needed
+- TODO: Move GridDirection to Direction module

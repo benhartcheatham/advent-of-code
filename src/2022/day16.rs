@@ -87,23 +87,27 @@ fn calc_pressure(start: GraphID, start_time: u64, graph: &Graph<u64>) -> (u64, V
 fn prune_graph(graph: Graph<u64>) -> Graph<u64> {
     let mut pruned = Graph::new();
 
-    for vid in graph.iter() {
-        let v = graph.get_vertex(vid).unwrap();
-        let paths = graph.djikstra(vid);
+    for v in graph.iter() {
+        let paths = graph.djikstra(v.get_id());
 
-        let pid1 = pruned
-            .find_vertex_by_label(&v.label)
-            .unwrap_or_else(|| pruned.add_vertex(v.data, Some(&v.label)));
+        let pid1 = if let Some(v1) = pruned.find_vertex_by_label(&v.label) {
+            v1.get_id()
+        } else {
+            pruned.add_vertex(v.data, Some(&v.label))
+        };
+
         for (vid2, w) in paths {
             let v2 = graph.get_vertex(vid2).unwrap();
 
-            if v2.data == 0 || vid2 == vid {
+            if v2.data == 0 || vid2 == v.get_id() {
                 continue;
             }
 
-            let pid2 = pruned
-                .find_vertex_by_label(&v2.label)
-                .unwrap_or_else(|| pruned.add_vertex(v2.data, Some(&v2.label)));
+            let pid2 = if let Some(v2) = pruned.find_vertex_by_label(&v2.label) {
+                v2.get_id()
+            } else {
+                pruned.add_vertex(v2.data, Some(&v2.label))
+            };
 
             pruned.add_edge(pid1, pid2, w);
         }
@@ -126,18 +130,23 @@ fn part1(input: &str) {
             .unwrap();
         let tunnels = &words[9..];
 
-        let vid = graph
-            .find_vertex_by_label(label)
-            .unwrap_or_else(|| graph.add_vertex(0, Some(label)));
+        let vid = if let Some(v) = graph.find_vertex_by_label(label) {
+            v.get_id()
+        } else {
+            graph.add_vertex(0, Some(label))
+        };
+
         graph.get_vertex_mut(vid).unwrap().data = rate;
 
         for label2 in tunnels
             .iter()
             .map(|s| s.chars().filter(|c| c.is_alphabetic()).collect::<String>())
         {
-            let vid2 = graph
-                .find_vertex_by_label(&label2)
-                .unwrap_or_else(|| graph.add_vertex(0, Some(&label2)));
+            let vid2 = if let Some(v2) = graph.find_vertex_by_label(&label2) {
+                v2.get_id()
+            } else {
+                graph.add_vertex(0, Some(&label2))
+            };
 
             graph.add_edge(vid, vid2, 1);
         }
@@ -146,7 +155,12 @@ fn part1(input: &str) {
     graph = prune_graph(graph);
     print!(
         "part1: {}",
-        calc_pressure(graph.find_vertex_by_label("AA").unwrap(), 30, &graph).0
+        calc_pressure(
+            graph.find_vertex_by_label("AA").unwrap().get_id(),
+            30,
+            &graph
+        )
+        .0
     );
 }
 
@@ -164,25 +178,29 @@ fn part2(input: &str) {
             .unwrap();
         let tunnels = &words[9..];
 
-        let vid = graph
-            .find_vertex_by_label(label)
-            .unwrap_or_else(|| graph.add_vertex(0, Some(label)));
+        let vid = if let Some(v) = graph.find_vertex_by_label(label) {
+            v.get_id()
+        } else {
+            graph.add_vertex(0, Some(label))
+        };
         graph.get_vertex_mut(vid).unwrap().data = rate;
 
         for label2 in tunnels
             .iter()
             .map(|s| s.chars().filter(|c| c.is_alphabetic()).collect::<String>())
         {
-            let vid2 = graph
-                .find_vertex_by_label(&label2)
-                .unwrap_or_else(|| graph.add_vertex(0, Some(&label2)));
+            let vid2 = if let Some(v2) = graph.find_vertex_by_label(&label2) {
+                v2.get_id()
+            } else {
+                graph.add_vertex(0, Some(&label2))
+            };
 
             graph.add_edge(vid, vid2, 1);
         }
     }
 
     graph = prune_graph(graph);
-    let start_id = graph.find_vertex_by_label("AA").unwrap();
+    let start_id = graph.find_vertex_by_label("AA").unwrap().get_id();
     let (_, states) = calc_pressure(start_id, 26, &graph);
     let mut max = 0;
     for i in 0..states.len() {

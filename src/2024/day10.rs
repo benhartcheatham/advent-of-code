@@ -73,8 +73,8 @@ fn part1(input: &str) {
 
         for (_, coord) in graph
             .iter()
-            .filter(|vid| graph.get_vertex(*vid).unwrap().data.0 == 9)
-            .map(|vid| graph.get_vertex(vid).unwrap().data)
+            .filter(|v| v.data.0 == 9)
+            .map(|v| v.data)
         {
             seen.insert(coord);
         }
@@ -110,7 +110,7 @@ fn part2(input: &str) {
         let graph = build_graph(&grid, h);
         cnt += graph
             .iter()
-            .filter(|vid| graph.get_vertex(*vid).unwrap().data.0 == 9)
+            .filter(|v| v.data.0 == 9)
             .count();
     }
 

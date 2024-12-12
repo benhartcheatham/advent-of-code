@@ -47,6 +47,12 @@ impl Coord {
     pub fn distance(&self, other: &Self) -> f64 {
         f64::sqrt(((self.x - other.x) as f64).powf(2.0) + ((self.y - other.y) as f64).powf(2.0))
     }
+
+    /// Gets this Coord as a usize tuple. If the conversion
+    /// isn't possible, returns None
+    pub fn as_unisgned(&self) -> Option<(usize, usize)> {
+        (*self).into()
+    }
 }
 
 impl std::fmt::Display for Coord {
@@ -54,6 +60,7 @@ impl std::fmt::Display for Coord {
         write!(f, "({}, {})", self.x, self.y)
     }
 }
+
 impl std::cmp::Ord for Coord {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         f64::sqrt((self.x.pow(2) + self.y.pow(2)) as f64)

@@ -100,10 +100,10 @@ impl FromStr for GridDirection {
         use GridDirection::*;
 
         match s.to_lowercase().as_str() {
-            "l" | "left" => Ok(Left),
-            "r" | "right" => Ok(Right),
-            "u" | "up" => Ok(Up),
-            "d" | "down" => Ok(Down),
+            "l" | "left" | "<" => Ok(Left),
+            "r" | "right" | ">" => Ok(Right),
+            "u" | "up" | "^" => Ok(Up),
+            "d" | "down" | "v" => Ok(Down),
             _ => Err(DirectionParseError),
         }
     }

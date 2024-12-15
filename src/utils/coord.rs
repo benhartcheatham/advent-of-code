@@ -50,7 +50,7 @@ impl Coord {
 
     /// Gets this Coord as a usize tuple. If the conversion
     /// isn't possible, returns None
-    pub fn as_unisgned(&self) -> Option<(usize, usize)> {
+    pub fn as_unsigned(&self) -> Option<(usize, usize)> {
         (*self).into()
     }
 }

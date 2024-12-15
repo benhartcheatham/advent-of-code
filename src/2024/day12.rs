@@ -11,7 +11,7 @@ use aocutils::timing::Timer;
 fn flood(grid: &[Vec<char>], coord: Coord) -> HashSet<Coord> {
     let mut points = HashSet::new();
     let mut to_visit = Vec::new();
-    let (x, y) = coord.as_unisgned().unwrap();
+    let (x, y) = coord.as_unsigned().unwrap();
     let this_ch = grid[x][y];
 
     to_visit.push(coord);
@@ -25,7 +25,7 @@ fn flood(grid: &[Vec<char>], coord: Coord) -> HashSet<Coord> {
         for dir in DIRECTIONS {
             let next = c + dir.into();
 
-            if let Some((x, y)) = next.as_unisgned() {
+            if let Some((x, y)) = next.as_unsigned() {
                 if in_ibounds(grid, next) && grid[x][y] == this_ch {
                     to_visit.push(next);
                 }
@@ -143,7 +143,7 @@ fn part1(input: &str) {
             let perimeter = perimeter(&points);
             cost += points.len() * perimeter;
 
-            for (x, y) in points.iter().map(|p| p.as_unisgned().unwrap()) {
+            for (x, y) in points.iter().map(|p| p.as_unsigned().unwrap()) {
                 visited[x][y] = true;
             }
         }
@@ -183,7 +183,7 @@ fn part2(input: &str) {
                     })
                     .sum::<usize>();
 
-            for (x, y) in points.iter().map(|p| p.as_unisgned().unwrap()) {
+            for (x, y) in points.iter().map(|p| p.as_unsigned().unwrap()) {
                 visited[x][y] = true;
             }
         }

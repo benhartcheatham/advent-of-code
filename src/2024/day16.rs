@@ -10,24 +10,17 @@ use aocutils::grid::direction::DIRECTIONS;
 use aocutils::grid::in_ibounds;
 use aocutils::timing::Timer;
 
-fn insert_node_helper(coord: Coord, graph: &mut Graph<(Coord, GridDirection)>) -> Vec<usize> {
+fn insert_node(
+    coord: Coord,
+    id_map: &mut HashMap<Coord, Vec<GraphID>>,
+    graph: &mut Graph<(Coord, GridDirection)>,
+) {
     use GridDirection::*;
 
-    let ids: Vec<usize> = graph
-        .iter()
-        .filter(|v| v.data.0 == coord)
-        .map(|v| v.get_id())
-        .collect();
-
-    if !ids.is_empty() {
-        return ids;
-    }
-
-    let mut ids = Vec::new();
+    let mut nodes = Vec::new();
     for d in DIRECTIONS {
-        let id = if let Some(v) = graph.iter().find(|v| v.data == (coord, d)) {
-            v.get_id()
-        } else {
+        nodes.push((
+            d,
             graph.add_vertex(
                 (coord, d),
                 Some(&format!(
@@ -40,36 +33,31 @@ fn insert_node_helper(coord: Coord, graph: &mut Graph<(Coord, GridDirection)>) -
                         Right => 'E',
                     }
                 )),
-            )
-        };
-
-        ids.push((d, id));
+            ),
+        ));
     }
 
-    for (dir, id) in &ids {
+    for (dir, id) in &nodes {
         let adj = (dir.rotate_left(), dir.rotate_right());
 
-        for (_, id2) in ids.iter().filter(|(d, _)| *d == adj.0 || *d == adj.1) {
+        for (_, id2) in nodes.iter().filter(|(d, _)| *d == adj.0 || *d == adj.1) {
             graph.add_edge(*id, *id2, 1000);
         }
     }
 
-    ids.into_iter().map(|(_, id)| id).collect()
+    id_map.insert(coord, nodes.into_iter().map(|(_, id)| id).collect());
 }
 
-fn insert_node(
+fn connect_nodes(
     coord: Coord,
     grid: &[Vec<char>],
-    id_map: &mut HashMap<Coord, Vec<GraphID>>,
+    id_map: &HashMap<Coord, Vec<GraphID>>,
     graph: &mut Graph<(Coord, GridDirection)>,
 ) {
-    let ids = id_map
-        .entry(coord)
-        .or_insert(insert_node_helper(coord, graph))
-        .clone();
-
     for dir in DIRECTIONS.iter() {
-        let vid = ids
+        let vid = id_map
+            .get(&coord)
+            .unwrap()
             .iter()
             .find(|id| graph.get_vertex(**id).unwrap().data.1 == *dir)
             .unwrap();
@@ -84,9 +72,9 @@ fn insert_node(
             continue;
         }
 
-        let adj = id_map.entry(c).or_insert(insert_node_helper(c, graph));
+        let adj = id_map.get(&c).unwrap();
         let aid = adj
-            .iter_mut()
+            .iter()
             .find(|aid| graph.get_vertex(**aid).unwrap().data.1 == *dir)
             .unwrap();
 
@@ -120,19 +108,22 @@ fn part1(input: &str) {
     let mut graph = Graph::new();
     let mut id_map = HashMap::new();
 
-    for i in 0..grid.len() {
-        for j in 0..grid[i].len() {
-            if grid[i][j] == '#' {
+    for (i, row) in grid.iter().enumerate() {
+        for (j, ch) in row.iter().enumerate() {
+            if *ch == '#' {
                 continue;
             }
 
             insert_node(
                 Coord::new(i as i64, j as i64),
-                &grid,
                 &mut id_map,
                 &mut graph,
             );
         }
+    }
+
+    for k in id_map.keys() {
+        connect_nodes(*k, &grid, &id_map, &mut graph);
     }
 
     let start = id_map
@@ -185,19 +176,22 @@ fn part2(input: &str) {
     let mut graph = Graph::new();
     let mut id_map = HashMap::new();
 
-    for i in 0..grid.len() {
-        for j in 0..grid[i].len() {
-            if grid[i][j] == '#' {
+    for (i, row) in grid.iter().enumerate() {
+        for (j, ch) in row.iter().enumerate() {
+            if *ch == '#' {
                 continue;
             }
 
             insert_node(
                 Coord::new(i as i64, j as i64),
-                &grid,
                 &mut id_map,
                 &mut graph,
             );
         }
+    }
+
+    for k in id_map.keys() {
+        connect_nodes(*k, &grid, &id_map, &mut graph);
     }
 
     let start = id_map

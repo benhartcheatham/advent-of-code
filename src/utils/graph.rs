@@ -1,5 +1,6 @@
+use std::cmp::Ordering;
 use std::collections::hash_map::{Values, ValuesMut};
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
 use std::fmt::{Display, Formatter, Result};
 
 // ID used by graphs to identify vertices
@@ -8,7 +9,7 @@ pub type GraphID = usize;
 /* VERTEX IMPLEMENTATION */
 
 #[derive(Debug)]
-pub struct Vertex<T: Ord + Clone> {
+pub struct Vertex<T> {
     id: GraphID,
     pub data: T,
     pub mark: bool,
@@ -16,7 +17,7 @@ pub struct Vertex<T: Ord + Clone> {
     pub label: String,
 }
 
-impl<T: Ord + Clone> Vertex<T> {
+impl<T> Vertex<T> {
     fn new(data: T, id: GraphID, label: &str) -> Self {
         Vertex {
             label: label.to_owned(),
@@ -87,12 +88,12 @@ impl Edge {
 
 /* GRAPH IMPLEMENTATION */
 
-pub struct Graph<T: Ord + Clone> {
+pub struct Graph<T> {
     vertices: HashMap<GraphID, Vertex<T>>,
     vid_alloc: GraphID,
 }
 
-impl<T: Ord + Clone> Graph<T> {
+impl<T> Graph<T> {
     pub fn new() -> Self {
         Graph {
             vertices: HashMap::new(),
@@ -200,6 +201,44 @@ impl<T: Ord + Clone> Graph<T> {
         GraphIteratorMut::new(self)
     }
 
+    /// Finds all paths from vertex @start to vertex @end
+    pub fn dfs(&self, start: GraphID, end: GraphID, max_len: Option<usize>) -> Vec<Vec<GraphID>> {
+        let discovered = vec![false; self.len()];
+        let mut stack = VecDeque::new();
+        let mut paths = Vec::new();
+        let max = max_len.unwrap_or(usize::MAX);
+
+        stack.push_back((start, vec![start], discovered.clone()));
+        while let Some((vid, path, mut discovered)) = stack.pop_back() {
+            if vid == end {
+                paths.push(path);
+                continue;
+            }
+
+            println!("path len: {}", path.len());
+            if path.len() == max {
+                continue;
+            }
+
+            if !discovered[vid] {
+                discovered[vid] = true;
+
+                for e in &self.get_vertex(vid).unwrap().edges {
+                    let mut p = path.clone();
+                    let u = e.traverse();
+                    p.push(u);
+                    stack.push_back((e.traverse(), p, discovered.clone()));
+                }
+            }
+        }
+
+        for p in paths.iter_mut() {
+            p.push(end);
+        }
+
+        paths
+    }
+
     /// Finds the weight of the shortest path from start to all other vertices in graph
     ///
     /// Returns a Vec where tuple.0 is the ID of a Vertex and tuple.1 is the weight
@@ -227,17 +266,127 @@ impl<T: Ord + Clone> Graph<T> {
 
         dist.into_iter().enumerate().collect()
     }
+
+    /// Finds the shortest path from vertex @start to vertex @end
+    ///
+    /// Returns the cost of the path and stores the computed shortest path in @path
+    pub fn djikstra_path(&self, start: GraphID, end: GraphID, path: &mut Vec<GraphID>) -> i64 {
+        let mut prev = vec![GraphID::MAX; self.len()];
+        let mut dist = vec![i64::MAX; self.len()];
+        let mut queue: BinaryHeap<DState> = BinaryHeap::new();
+
+        dist[start] = 0;
+
+        queue.push(DState::new(start, dist[start]));
+        while !queue.is_empty() {
+            let u = queue.pop().unwrap();
+
+            if u.vid == end {
+                break;
+            }
+
+            for e in &self.get_vertex(u.vid).unwrap().edges {
+                let alt = dist[u.vid] + e.get_weight();
+                let v = e.traverse();
+
+                if alt < dist[v] {
+                    dist[v] = alt;
+                    prev[v] = u.vid;
+                    queue.push(DState::new(v, alt));
+                }
+            }
+        }
+
+        let mut id = end;
+        while id != start {
+            path.push(id);
+            id = prev[id];
+        }
+
+        path.push(start);
+        path.reverse();
+
+        dist[end]
+    }
+
+    /// Finds all shortest paths from vertex @start to vertex @end
+    ///
+    /// Modifies the graph in-place to only include vertices on a shortest path
+    /// from @start to @end
+    pub fn djikstra_all_paths(&self, start: GraphID, end: GraphID) -> Vec<Vec<GraphID>> {
+        let mut prev = vec![HashSet::new(); self.len()];
+        let mut dist = vec![i64::MAX; self.len()];
+        let mut queue: BinaryHeap<DState> = BinaryHeap::new();
+
+        dist[start] = 0;
+
+        queue.push(DState::new(start, dist[start]));
+        while !queue.is_empty() {
+            let u = queue.pop().unwrap();
+
+            if u.vid == end {
+                continue;
+            }
+
+            for e in &self.get_vertex(u.vid).unwrap().edges {
+                let alt = dist[u.vid] + e.get_weight();
+                let v = e.traverse();
+
+                match alt.cmp(&dist[v]) {
+                    Ordering::Less => {
+                        dist[v] = alt;
+                        prev[v] = HashSet::new();
+                        prev[v].insert(u.vid);
+
+                        queue.retain(|state| state.vid != v);
+                        queue.push(DState::new(v, alt));
+                    }
+                    Ordering::Equal => {
+                        prev[v].insert(u.vid);
+                        queue.push(DState::new(v, alt));
+                    }
+                    Ordering::Greater => (),
+                }
+            }
+        }
+
+        let mut stack = VecDeque::new();
+        let mut paths = Vec::new();
+
+        stack.push_back((end, Vec::new()));
+        while let Some((vid, mut path)) = stack.pop_back() {
+            if vid == start {
+                paths.push(path);
+                continue;
+            }
+
+            if !path.contains(&vid) {
+                path.push(vid);
+
+                for p in &prev[vid] {
+                    stack.push_back((*p, path.clone()));
+                }
+            }
+        }
+
+        for p in paths.iter_mut() {
+            p.push(start);
+            p.reverse();
+        }
+
+        paths
+    }
 }
 
 /* GRAPH TRAITS */
 
-impl<T: Ord + Clone> Default for Graph<T> {
+impl<T> Default for Graph<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T: Ord + Clone> Display for Graph<T> {
+impl<T> Display for Graph<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         for v in self.vertices.values() {
             writeln!(
@@ -257,15 +406,15 @@ impl<T: Ord + Clone> Display for Graph<T> {
 
 /* GRAPH ITERATOR TRAITS */
 
-pub struct GraphIterator<'a, T: Ord + Clone> {
+pub struct GraphIterator<'a, T> {
     vals: Values<'a, GraphID, Vertex<T>>,
 }
 
-pub struct GraphIteratorMut<'a, T: Ord + Clone> {
+pub struct GraphIteratorMut<'a, T> {
     vals: ValuesMut<'a, GraphID, Vertex<T>>,
 }
 
-impl<'a, T: Ord + Clone> GraphIterator<'a, T> {
+impl<'a, T> GraphIterator<'a, T> {
     fn new(graph: &'a Graph<T>) -> Self {
         GraphIterator {
             vals: graph.vertices.values(),
@@ -273,7 +422,7 @@ impl<'a, T: Ord + Clone> GraphIterator<'a, T> {
     }
 }
 
-impl<'a, T: Ord + Clone> GraphIteratorMut<'a, T> {
+impl<'a, T> GraphIteratorMut<'a, T> {
     fn new(graph: &'a mut Graph<T>) -> Self {
         GraphIteratorMut {
             vals: graph.vertices.values_mut(),
@@ -281,7 +430,7 @@ impl<'a, T: Ord + Clone> GraphIteratorMut<'a, T> {
     }
 }
 
-impl<'a, T: Ord + Clone> Iterator for GraphIterator<'a, T> {
+impl<'a, T> Iterator for GraphIterator<'a, T> {
     type Item = &'a Vertex<T>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -289,7 +438,7 @@ impl<'a, T: Ord + Clone> Iterator for GraphIterator<'a, T> {
     }
 }
 
-impl<'a, T: Ord + Clone> Iterator for GraphIteratorMut<'a, T> {
+impl<'a, T> Iterator for GraphIteratorMut<'a, T> {
     type Item = &'a mut Vertex<T>;
 
     fn next(&mut self) -> Option<Self::Item> {

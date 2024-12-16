@@ -8,17 +8,17 @@ use super::coord::Coord;
 pub fn in_bounds<T>(grid: &[Vec<T>], coord: GridCoord) -> bool {
     let (x, y): (usize, usize) = coord.into();
 
-    if grid.is_empty() {
+    if grid.is_empty() || x >= grid.len() {
         return false;
     }
 
-    x < grid.len() && y < grid[0].len()
+    !grid[x].is_empty() && y < grid[0].len()
 }
 
 pub fn in_ibounds<T>(grid: &[Vec<T>], coord: Coord) -> bool {
     let (x, y): (i64, i64) = coord.into();
 
-    if grid.is_empty() || x < 0 || y < 0 {
+    if grid.is_empty() || x < 0 || grid[x as usize].is_empty() || y < 0 {
         return false;
     }
 

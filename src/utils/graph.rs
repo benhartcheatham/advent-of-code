@@ -121,6 +121,11 @@ impl<T> Graph<T> {
         self.vertices.values().find(|v| v.label == label)
     }
 
+    /// Whether this Graph contains a Vertex with id @id
+    pub fn contains(&self, id: GraphID) -> bool {
+        self.vertices.contains_key(&id)
+    }
+
     /// Adds a Vertex to this Graph. If @label = None, then the label will be set to the
     /// resulting Vertex's GraphID
     pub fn add_vertex(&mut self, data: T, label: Option<&str>) -> GraphID {
@@ -270,7 +275,12 @@ impl<T> Graph<T> {
     /// Finds the shortest path from vertex @start to vertex @end
     ///
     /// Returns the cost of the path and stores the computed shortest path in @path
-    pub fn djikstra_path(&self, start: GraphID, end: GraphID, path: &mut Vec<GraphID>) -> i64 {
+    pub fn djikstra_path(
+        &self,
+        start: GraphID,
+        end: GraphID,
+        path: Option<&mut Vec<GraphID>>,
+    ) -> i64 {
         let mut prev = vec![GraphID::MAX; self.len()];
         let mut dist = vec![i64::MAX; self.len()];
         let mut queue: BinaryHeap<DState> = BinaryHeap::new();
@@ -297,14 +307,16 @@ impl<T> Graph<T> {
             }
         }
 
-        let mut id = end;
-        while id != start {
-            path.push(id);
-            id = prev[id];
-        }
+        if let Some(path) = path {
+            let mut id = end;
+            while id != start {
+                path.push(id);
+                id = prev[id];
+            }
 
-        path.push(start);
-        path.reverse();
+            path.push(start);
+            path.reverse();
+        }
 
         dist[end]
     }

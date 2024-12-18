@@ -212,8 +212,6 @@ fn part2(input: &str) {
         }
     }
 
-    let mut path = Vec::new();
-    graph.djikstra_path(*start, seid, &mut path);
     let mut set = HashSet::new();
     let paths = graph.djikstra_all_paths(*start, seid);
 

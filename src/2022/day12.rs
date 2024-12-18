@@ -5,7 +5,7 @@ use aocutils::coord::Coord;
 use aocutils::grid::algo::*;
 use aocutils::timing::Timer;
 
-fn cost_fn(grid: &[Vec<u8>], u: Coord, v: Coord) -> usize {
+fn cost_fn(grid: &[Vec<u8>], u: Coord, _cost: usize, v: Coord) -> usize {
     let (ux, uy) = u.as_unsigned().unwrap();
     let (vx, vy) = v.as_unsigned().unwrap();
 
@@ -41,7 +41,7 @@ fn part1(input: &str) {
         }
     }
 
-    let path = djikstra(&cells, start, end, cost_fn);
+    let path = djikstra(&cells, start, end, cost_fn).unwrap();
 
     println!("part1: {}", path.len());
 }
@@ -75,7 +75,7 @@ fn part2(input: &str) {
         starts
             .iter()
             .filter_map(|s| {
-                let len = djikstra(&cells, *s, end, cost_fn).len();
+                let len = djikstra(&cells, *s, end, cost_fn).unwrap().len();
                 if len != 0 {
                     Some(len)
                 } else {

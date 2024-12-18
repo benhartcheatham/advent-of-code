@@ -44,6 +44,38 @@ fn part1(input: &str) {
     );
 }
 
+fn binary_search(grid: &[Vec<char>], corrupted: &Vec<(usize, usize)>) -> usize {
+    let (mut left, mut right) = (0, corrupted.len() - 1);
+    let mut middle = 1;
+
+    while left <= right {
+        middle = (left + right) / 2;
+
+        let mut g = grid.to_owned();
+        for (x, y) in corrupted.iter().take(middle) {
+            g[*x][*y] = '#';
+        }
+
+        let exists = djikstra(
+            &g,
+            Coord::new(0, 0),
+            Coord::new(GRIDSIZE as i64 - 1, GRIDSIZE as i64 - 1),
+            cost_fn,
+        )
+        .is_some();
+
+        if exists && left == right {
+            return middle;
+        } else if exists {
+            left = middle + 1;
+        } else {
+            right = middle - 1;
+        }
+    }
+
+    middle - 1
+}
+
 fn part2(input: &str) {
     let mut grid = vec![vec!['.'; GRIDSIZE]; GRIDSIZE];
     let mut corrupted = Vec::new();
@@ -60,21 +92,9 @@ fn part2(input: &str) {
         grid[x][y] = '#';
     }
 
-    corrupted.reverse();
-
-    while let Some((x, y)) = corrupted.pop() {
-        grid[x][y] = '#';
-
-        if djikstra(
-            &grid,
-            Coord::new(0, 0),
-            Coord::new(GRIDSIZE as i64 - 1, GRIDSIZE as i64 - 1),
-            cost_fn,
-        ).is_none() {
-            print!("part2: {:?}", (y, x));
-            break;
-        }
-    }
+    let idx = binary_search(&grid, &corrupted);
+    let c = corrupted[idx];
+    print!("part2: {},{}", c.1, c.0);
 }
 
 pub fn run(benchmark: bool) -> io::Result<()> {

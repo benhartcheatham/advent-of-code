@@ -1,12 +1,13 @@
 use std::fs;
 use std::io;
 
-use aocutils::grid::{algo::*, coord::*};
+use aocutils::coord::Coord;
+use aocutils::grid::algo::*;
 use aocutils::timing::Timer;
 
-fn cost_fn(grid: &[Vec<u8>], u: GridCoord, v: GridCoord) -> i64 {
-    let (ux, uy) = u.into();
-    let (vx, vy) = v.into();
+fn cost_fn(grid: &[Vec<u8>], u: Coord, v: Coord) -> usize {
+    let (ux, uy) = u.as_unsigned().unwrap();
+    let (vx, vy) = v.as_unsigned().unwrap();
 
     if grid[ux][uy] == grid[vx][vy]
         || grid[ux][uy] + 1 == grid[vx][vy]
@@ -14,13 +15,13 @@ fn cost_fn(grid: &[Vec<u8>], u: GridCoord, v: GridCoord) -> i64 {
     {
         1
     } else {
-        i64::MAX
+        usize::MAX
     }
 }
 
 fn part1(input: &str) {
     let mut cells = Vec::new();
-    let (mut start, mut end) = (GridCoord::new(0, 0), GridCoord::new(0, 0));
+    let (mut start, mut end) = (Coord::new(0, 0), Coord::new(0, 0));
     for (i, line) in input.lines().map(|l| l.as_bytes()).enumerate() {
         cells.push(Vec::new());
 
@@ -28,11 +29,11 @@ fn part1(input: &str) {
             match *b {
                 b'a'..=b'z' => cells[i].push(*b),
                 b'S' => {
-                    start = GridCoord::new(i, j);
+                    start = Coord::new(i as i64, j as i64);
                     cells[i].push(b'a');
                 }
                 b'E' => {
-                    end = GridCoord::new(i, j);
+                    end = Coord::new(i as i64, j as i64);
                     cells[i].push(b'z');
                 }
                 _ => panic!(),
@@ -47,7 +48,7 @@ fn part1(input: &str) {
 
 fn part2(input: &str) {
     let mut cells = Vec::new();
-    let mut end = GridCoord::new(0, 0);
+    let mut end = Coord::new(0, 0);
     let mut starts = Vec::new();
 
     for (i, line) in input.lines().map(|l| l.as_bytes()).enumerate() {
@@ -57,11 +58,11 @@ fn part2(input: &str) {
             match *b {
                 b'b'..=b'z' => cells[i].push(*b),
                 b'a' | b'S' => {
-                    starts.push(GridCoord::new(i, j));
+                    starts.push(Coord::new(i as i64, j as i64));
                     cells[i].push(b'a');
                 }
                 b'E' => {
-                    end = GridCoord::new(i, j);
+                    end = Coord::new(i as i64, j as i64);
                     cells[i].push(b'z');
                 }
                 _ => panic!(),

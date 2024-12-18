@@ -1,19 +1,15 @@
-use std::{
-    collections::{BinaryHeap, HashMap},
-    fmt::Debug,
-};
-use super::{in_bounds, direction::GridDirection, coord::GridCoord};
-use crate::coord::Coord;
-
+use super::direction::GridDirection;
+use crate::{coord::Coord, grid::in_ibounds};
+use std::{collections::{BinaryHeap, HashSet}, fmt::Debug};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct HeapElem {
-    coord: GridCoord,
-    data: i64,
+    coord: Coord,
+    data: usize,
 }
 
 impl HeapElem {
-    fn new(data: i64, coord: GridCoord) -> Self {
+    fn new(data: usize, coord: Coord) -> Self {
         HeapElem { data, coord }
     }
 }
@@ -33,88 +29,71 @@ impl PartialOrd for HeapElem {
     }
 }
 
-pub type DjikstraCostFn<T> = fn(&[Vec<T>], GridCoord, GridCoord) -> i64;
+pub type DjikstraCostFn<T> = fn(&[Vec<T>], Coord, Coord) -> usize;
 
 /// Takes in a starting and ending point and returns the shortest path between them
 #[allow(unused)]
 pub fn djikstra<T: Copy + Clone + Ord + Debug>(
     grid: &[Vec<T>],
-    start: GridCoord,
-    end: GridCoord,
+    start: Coord,
+    end: Coord,
     func: DjikstraCostFn<T>,
-) -> Vec<GridCoord> {
+) -> Vec<Coord> {
     use GridDirection::*;
 
+    if grid.is_empty() || !in_ibounds(grid, start) || !in_ibounds(grid, end) {
+        return Vec::new();
+    }
+
     let mut queue = BinaryHeap::new();
-    let mut visited = Vec::new();
-    let mut dist = HashMap::new();
-    let mut prev = HashMap::new();
+    let mut visited = HashSet::new();
+    let mut dist =
+        vec![vec![(usize::MAX, Coord::new(i64::MAX, i64::MAX)); grid[0].len()]; grid.len()];
 
-    for (i, r) in grid.iter().enumerate() {
-        for j in 0..r.len() {
-            dist.insert(GridCoord::new(i, j), i64::MAX);
-            prev.insert(GridCoord::new(i, j), GridCoord::new(usize::MAX, usize::MAX));
-        }
-    }
-
-    if let Some(v) = dist.get_mut(&start) {
-        *v = 0;
-    }
-
-    let directions = [Up, Down, Left, Right];
+    let (sx, sy) = start.as_unsigned().unwrap();
+    dist[sx][sy] = (0, Coord::new(0, 0));
 
     queue.push(HeapElem::new(0, start));
-    while !queue.is_empty() {
-        let u = queue.pop().unwrap();
-        visited.push(u.coord);
+    while let Some(he) = queue.pop() {
+        let u = he.coord;
+        visited.insert(u);
 
-        if u.coord == end {
+        if u == end {
             break;
         }
 
-        // TODO: Verify this isn't broken, I had to replace the .translate() method
-        for d in &directions {
-            let dc: Coord = (*d).into();
-            let v = if dc.x < 0 {
-                u.coord.saturating_sub(GridCoord::new(1, 0))
-            } else {
-                u.coord + GridCoord::new(1, 0)
-            };
-            let v = if dc.y < 0 {
-                v.saturating_sub(GridCoord::new(0, 1))
-            } else {
-                v.saturating_add(GridCoord::new(0, 1))
-            };
+        for d in super::direction::DIRECTIONS {
+            let next = u + d.into();
 
-            if visited.contains(&v) || !in_bounds(grid, v) {
+            if !in_ibounds(grid, next) || visited.contains(&next) {
                 continue;
             }
 
-            let alt = dist[&u.coord]
-                .checked_add((func)(grid, u.coord, v))
-                .unwrap_or(i64::MAX);
-            if alt < dist[&v] {
-                *dist.get_mut(&v).unwrap() = alt;
-                *prev.get_mut(&v).unwrap() = u.coord;
-                queue.push(HeapElem::new(alt, v));
+            let (x, y) = u.as_unsigned().unwrap();
+            let (nx, ny) = next.as_unsigned().unwrap();
+
+            let alt = func(grid, u, next);
+            if alt < dist[nx][ny].0 {
+                dist[nx][ny] = (alt, u);
+                queue.push(HeapElem::new(alt, next));
             }
         }
     }
 
     let mut path = Vec::new();
-    if let Some(u) = prev.get(&end) {
-        if start == end || *u == GridCoord::new(usize::MAX, usize::MAX) {
-            return path;
-        }
-    } else {
-        return path;
+    path.push(end);
+
+    let (ex, ey) = end.as_unsigned().unwrap();
+    let mut prev = dist[ex][ey].1;
+
+    while prev != start {
+        path.push(prev);
+        let (px, py) = prev.as_unsigned().unwrap();
+        prev = dist[px][py].1;
     }
 
-    let mut u = end;
-    while u != start && prev.contains_key(&u) {
-        path.push(*prev.get(&u).unwrap());
-        u = *prev.get(&u).unwrap();
-    }
+    path.push(start);
+    path.reverse();
 
     path
 }

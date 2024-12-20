@@ -206,21 +206,26 @@ impl<T> Graph<T> {
         GraphIteratorMut::new(self)
     }
 
-    /// Finds all paths from vertex @start to vertex @end
-    pub fn dfs(&self, start: GraphID, end: GraphID, max_len: Option<usize>) -> Vec<Vec<GraphID>> {
-        let discovered = vec![false; self.len()];
-        let mut stack = VecDeque::new();
-        let mut paths = Vec::new();
+    /// Finds path from vertex @start to vertex @end, if it exists
+    ///
+    /// If @max_len is Some(x) then the path returned will be limited to
+    /// be less than x (if such a path exists)
+    pub fn dfs(
+        &self,
+        start: GraphID,
+        end: GraphID,
+        max_len: Option<usize>,
+    ) -> Option<Vec<GraphID>> {
+        let mut discovered = vec![false; self.len()];
         let max = max_len.unwrap_or(usize::MAX);
+        let mut stack = VecDeque::new();
 
-        stack.push_back((start, vec![start], discovered.clone()));
-        while let Some((vid, path, mut discovered)) = stack.pop_back() {
+        stack.push_back((start, vec![start]));
+        while let Some((vid, path)) = stack.pop_back() {
             if vid == end {
-                paths.push(path);
-                continue;
+                return Some(path);
             }
 
-            println!("path len: {}", path.len());
             if path.len() == max {
                 continue;
             }
@@ -232,16 +237,12 @@ impl<T> Graph<T> {
                     let mut p = path.clone();
                     let u = e.traverse();
                     p.push(u);
-                    stack.push_back((e.traverse(), p, discovered.clone()));
+                    stack.push_back((e.traverse(), p));
                 }
             }
         }
 
-        for p in paths.iter_mut() {
-            p.push(end);
-        }
-
-        paths
+        None
     }
 
     /// Finds the weight of the shortest path from start to all other vertices in graph
@@ -270,55 +271,6 @@ impl<T> Graph<T> {
         }
 
         dist.into_iter().enumerate().collect()
-    }
-
-    /// Finds the shortest path from vertex @start to vertex @end
-    ///
-    /// Returns the cost of the path and stores the computed shortest path in @path
-    pub fn djikstra_path(
-        &self,
-        start: GraphID,
-        end: GraphID,
-        path: Option<&mut Vec<GraphID>>,
-    ) -> i64 {
-        let mut prev = vec![GraphID::MAX; self.len()];
-        let mut dist = vec![i64::MAX; self.len()];
-        let mut queue: BinaryHeap<DState> = BinaryHeap::new();
-
-        dist[start] = 0;
-
-        queue.push(DState::new(start, dist[start]));
-        while !queue.is_empty() {
-            let u = queue.pop().unwrap();
-
-            if u.vid == end {
-                break;
-            }
-
-            for e in &self.get_vertex(u.vid).unwrap().edges {
-                let alt = dist[u.vid] + e.get_weight();
-                let v = e.traverse();
-
-                if alt < dist[v] {
-                    dist[v] = alt;
-                    prev[v] = u.vid;
-                    queue.push(DState::new(v, alt));
-                }
-            }
-        }
-
-        if let Some(path) = path {
-            let mut id = end;
-            while id != start {
-                path.push(id);
-                id = prev[id];
-            }
-
-            path.push(start);
-            path.reverse();
-        }
-
-        dist[end]
     }
 
     /// Finds all shortest paths from vertex @start to vertex @end

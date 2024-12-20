@@ -4,7 +4,7 @@ use std::io;
 
 use aocutils::coord::Coord;
 use aocutils::grid::direction::GridDirection;
-use aocutils::grid::in_ibounds;
+use aocutils::grid::in_bounds;
 use aocutils::timing::Timer;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -48,7 +48,7 @@ impl Robot {
     fn find_empty(&self, grid: &[Vec<Option<Cell>>], dir: Coord) -> Option<Coord> {
         let mut next = self.pos + dir;
 
-        if !in_ibounds(grid, next) {
+        if !in_bounds(grid, next) {
             return None;
         }
 
@@ -56,7 +56,7 @@ impl Robot {
         while grid[x][y].is_some() {
             next += dir;
 
-            if !in_ibounds(grid, next) || grid[x][y].unwrap() == Cell::Wall {
+            if !in_bounds(grid, next) || grid[x][y].unwrap() == Cell::Wall {
                 return None;
             }
 
@@ -72,7 +72,7 @@ impl Robot {
         let nextleft = leftpos + dir;
         let nextright = leftpos + dir + Coord::new(0, 1);
 
-        if !in_ibounds(grid, nextleft) || !in_ibounds(grid, nextright) {
+        if !in_bounds(grid, nextleft) || !in_bounds(grid, nextright) {
             return false;
         }
 

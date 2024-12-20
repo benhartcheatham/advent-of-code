@@ -4,18 +4,17 @@ use std::io;
 
 use aocutils::coord::Coord;
 use aocutils::graph::Graph;
-use aocutils::grid::coord::GridCoord;
 use aocutils::grid::direction::*;
-use aocutils::grid::in_ibounds;
+use aocutils::grid::in_bounds;
 use aocutils::timing::Timer;
 
 fn can_traverse(grid: &[Vec<u32>], curr: Coord, next: Coord) -> bool {
-    if !in_ibounds(grid, next) {
+    if !in_bounds(grid, next) {
         return false;
     }
 
-    let (x, y) = GridCoord::from_coord(curr).unwrap().into();
-    let (nx, ny) = GridCoord::from_coord(next).unwrap().into();
+    let (x, y) = curr.as_unsigned().unwrap();
+    let (nx, ny) = next.as_unsigned().unwrap();
 
     grid[x][y] + 1 == grid[nx][ny]
 }
@@ -32,7 +31,7 @@ fn build_graph(grid: &[Vec<u32>], head: Coord) -> Graph<(u32, Coord)> {
             let next = curr + dir.into();
 
             if can_traverse(grid, curr, next) {
-                let (nx, ny) = GridCoord::from_coord(next).unwrap().into();
+                let (nx, ny) = next.as_unsigned().unwrap();
                 let v2 = graph.add_vertex((grid[nx][ny], next), None);
                 graph.add_edge(v, v2, 1);
 

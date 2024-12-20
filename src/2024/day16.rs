@@ -7,7 +7,7 @@ use aocutils::coord::Coord;
 use aocutils::graph::*;
 use aocutils::grid::direction::GridDirection;
 use aocutils::grid::direction::DIRECTIONS;
-use aocutils::grid::in_ibounds;
+use aocutils::grid::in_bounds;
 use aocutils::timing::Timer;
 
 fn insert_node(
@@ -63,7 +63,7 @@ fn connect_nodes(
             .unwrap();
         let c = coord + (*dir).into();
 
-        if !in_ibounds(grid, c) {
+        if !in_bounds(grid, c) {
             continue;
         }
 

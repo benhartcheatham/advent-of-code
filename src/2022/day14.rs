@@ -2,11 +2,10 @@ use std::fs;
 use std::io;
 
 use aocutils::coord::*;
-use aocutils::grid::in_bounds;
-use aocutils::grid::{coord::*, direction::*, in_ibounds};
+use aocutils::grid::{direction::*, in_bounds};
 use aocutils::timing::Timer;
 
-const EXTRA_COLS: usize = 200;
+const EXTRA_COLS: i64 = 200;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Cell {
@@ -61,10 +60,9 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
 
             grid[start.x as usize][start.y as usize] = Cell::Rock;
             while diff != origin {
-                let c =
-                    Coord::new(start.x + diff.x, start.y + diff.y).abs();
+                let c = Coord::new(start.x + diff.x, start.y + diff.y).abs();
 
-                if !in_ibounds(&grid, c) {
+                if !in_bounds(&grid, c) {
                     continue;
                 }
 
@@ -87,11 +85,11 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
     }
 
     for row in &mut grid {
-        let mut left = vec![Cell::Air; EXTRA_COLS];
+        let mut left = vec![Cell::Air; EXTRA_COLS as usize];
 
         left.append(row);
         *row = left;
-        row.append(&mut vec![Cell::Air; EXTRA_COLS]);
+        row.append(&mut vec![Cell::Air; EXTRA_COLS as usize]);
     }
 
     grid.push(vec![Cell::Air; grid[0].len()]);
@@ -100,22 +98,22 @@ fn create_grid(input: &str, part2: bool) -> Vec<Vec<Cell>> {
     grid
 }
 
-fn drop_in_bounds(grid: &[Vec<Cell>], c: GridCoord) -> bool {
+fn drop_in_bounds(grid: &[Vec<Cell>], c: Coord) -> bool {
     use GridDirection::*;
 
-    let below = Coord::new(c.x as i64, c.y as i64) + Down.into();
+    let below = Coord::new(c.x, c.y) + Down.into();
     let botleft = below + Left.into();
     let botright = below + Right.into();
 
-    if !in_ibounds(grid, below) {
+    if !in_bounds(grid, below) {
         return false;
     }
 
-    if !in_ibounds(grid, botleft) {
+    if !in_bounds(grid, botleft) {
         return false;
     }
 
-    if !in_ibounds(grid, botright) {
+    if !in_bounds(grid, botright) {
         return false;
     }
 
@@ -125,27 +123,29 @@ fn drop_in_bounds(grid: &[Vec<Cell>], c: GridCoord) -> bool {
 fn part1(input: &str) {
     use GridDirection::*;
     let mut grid = create_grid(input, false);
-    let mut sand = GridCoord::new(0, 500);
+    let mut sand = Coord::new(0, 500);
 
     while in_bounds(&grid, sand) {
         if !drop_in_bounds(&grid, sand) {
             break;
         }
 
-        let below = Coord::new(sand.x as i64, sand.y as i64) + Down.into();
-        let botleft = GridCoord::from_coord((below + Left.into()).abs()).unwrap();
-        let botright = GridCoord::from_coord((below + Right.into()).abs()).unwrap();
-        let below = GridCoord::from_coord(below.abs()).unwrap();
+        // no clue if this still works after all the changes I've made in utils crates
+        let below = sand + Down.into();
+        let botleft = (below + Left.into()).abs().as_unsigned().unwrap();
+        let botright = (below + Right.into()).abs().as_unsigned().unwrap();
+        let below = below.abs().as_unsigned().unwrap();
 
-        if grid[below.x][below.y] == Cell::Air {
-            sand = below;
-        } else if grid[botleft.x][botleft.y] == Cell::Air {
-            sand = botleft;
-        } else if grid[botright.x][botright.y] == Cell::Air {
-            sand = botright;
+        if grid[below.0][below.1] == Cell::Air {
+            sand = Coord::from_unsigned(&below).unwrap();
+        } else if grid[botleft.0][botleft.1] == Cell::Air {
+            sand = Coord::from_unsigned(&botleft).unwrap();
+        } else if grid[botright.0][botright.1] == Cell::Air {
+            sand = Coord::from_unsigned(&botright).unwrap();
         } else {
-            grid[sand.x][sand.y] = Cell::Sand;
-            sand = GridCoord::new(0, 500);
+            let (sx, sy) = sand.as_unsigned().unwrap();
+            grid[sx][sy] = Cell::Sand;
+            sand = Coord::new(0, 500);
         }
     }
 
@@ -160,28 +160,30 @@ fn part1(input: &str) {
 fn part2(input: &str) {
     use GridDirection::*;
     let mut grid = create_grid(input, true);
-    let mut sand = GridCoord::new(0, 500 + EXTRA_COLS);
+    let mut sand = Coord::new(0, 500 + EXTRA_COLS);
 
     while in_bounds(&grid, sand) {
-        let below: Coord = Coord::new(sand.x as i64, sand.y as i64) + Down.into();
+        let below = sand + Down.into();
 
-        let botleft = GridCoord::from_coord((below + Left.into()).abs()).unwrap();
-        let botright = GridCoord::from_coord((below + Right.into()).abs()).unwrap();
-        let below = GridCoord::from_coord(below.abs()).unwrap();
+        let botleft = (below + Left.into()).abs().as_unsigned().unwrap();
+        let botright = (below + Right.into()).abs().as_unsigned().unwrap();
+        let below = below.abs().as_unsigned().unwrap();
 
-        if grid[below.x][below.y] == Cell::Air {
-            sand = below;
-        } else if grid[botleft.x][botleft.y] == Cell::Air {
-            sand = botleft;
-        } else if grid[botright.x][botright.y] == Cell::Air {
-            sand = botright;
+        if grid[below.0][below.1] == Cell::Air {
+            sand = Coord::from_unsigned(&below).unwrap();
+        } else if grid[botleft.0][botleft.1] == Cell::Air {
+            sand = Coord::from_unsigned(&botleft).unwrap();
+        } else if grid[botright.0][botright.1] == Cell::Air {
+            sand = Coord::from_unsigned(&botright).unwrap();
         } else {
-            grid[sand.x][sand.y] = Cell::Sand;
-            if sand == GridCoord::new(0, 500 + EXTRA_COLS) {
+            let (sx, sy) = sand.as_unsigned().unwrap();
+
+            grid[sx][sy] = Cell::Sand;
+            if sand == Coord::new(0, 500 + EXTRA_COLS) {
                 break;
             }
 
-            sand = GridCoord::new(0, 500 + EXTRA_COLS);
+            sand = Coord::new(0, 500 + EXTRA_COLS);
         }
     }
 

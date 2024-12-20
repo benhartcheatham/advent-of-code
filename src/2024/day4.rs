@@ -4,12 +4,12 @@ use std::io;
 use aocutils::coord::Coord;
 use aocutils::direction::Direction;
 use aocutils::direction::DIRECTIONS;
-use aocutils::grid::in_ibounds;
+use aocutils::grid::in_bounds;
 use aocutils::timing::Timer;
 
 fn search(grid: &[Vec<char>], mut coord: Coord, xdir: i64, ydir: i64, needle: &str) -> u64 {
     for ch in needle.chars() {
-        if !in_ibounds(grid, coord) {
+        if !in_bounds(grid, coord) {
             return 0;
         }
 
@@ -25,7 +25,7 @@ fn search(grid: &[Vec<char>], mut coord: Coord, xdir: i64, ydir: i64, needle: &s
 }
 
 fn search_cross(grid: &[Vec<char>], coord: Coord) -> u64 {
-    if !in_ibounds(grid, coord) {
+    if !in_bounds(grid, coord) {
         return 0;
     }
 
@@ -42,7 +42,7 @@ fn search_cross(grid: &[Vec<char>], coord: Coord) -> u64 {
     ];
 
     for c in to_check {
-        if !in_ibounds(grid, c) {
+        if !in_bounds(grid, c) {
             return 0;
         }
     }

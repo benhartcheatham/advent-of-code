@@ -53,6 +53,14 @@ impl Coord {
     pub fn as_unsigned(&self) -> Option<(usize, usize)> {
         (*self).into()
     }
+
+    pub fn from_unsigned(value: &(usize, usize)) -> Option<Self> {
+        if value.0 > i64::MAX as usize || value.1 > i64::MAX as usize {
+            None
+        } else {
+            Some(Self::new(value.0 as i64, value.1 as i64))
+        }
+    }
 }
 
 impl std::fmt::Display for Coord {

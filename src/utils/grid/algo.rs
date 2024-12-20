@@ -1,5 +1,5 @@
 use super::direction::GridDirection;
-use crate::{coord::Coord, grid::in_ibounds};
+use crate::{coord::Coord, grid::in_bounds};
 use std::{collections::BinaryHeap, fmt::Debug};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -42,7 +42,7 @@ where
 {
     use GridDirection::*;
 
-    if grid.is_empty() || !in_ibounds(grid, start) || !in_ibounds(grid, end) {
+    if grid.is_empty() || !in_bounds(grid, start) || !in_bounds(grid, end) {
         return None;
     }
 
@@ -64,7 +64,7 @@ where
         for d in super::direction::DIRECTIONS {
             let next = curr + d.into();
 
-            if !in_ibounds(grid, next) {
+            if !in_bounds(grid, next) {
                 continue;
             }
 
@@ -86,7 +86,7 @@ where
     let mut prev = dist[ex][ey].1;
 
     while prev != start {
-        if in_ibounds(grid, prev) {
+        if in_bounds(grid, prev) {
             path.push(prev);
             let (px, py) = prev.as_unsigned().unwrap();
             prev = dist[px][py].1;

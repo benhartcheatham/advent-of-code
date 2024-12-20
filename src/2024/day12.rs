@@ -5,7 +5,7 @@ use std::io;
 use aocutils::coord::Coord;
 use aocutils::grid::direction::GridDirection;
 use aocutils::grid::direction::DIRECTIONS;
-use aocutils::grid::in_ibounds;
+use aocutils::grid::in_bounds;
 use aocutils::timing::Timer;
 
 fn flood(grid: &[Vec<char>], coord: Coord) -> HashSet<Coord> {
@@ -26,7 +26,7 @@ fn flood(grid: &[Vec<char>], coord: Coord) -> HashSet<Coord> {
             let next = c + dir.into();
 
             if let Some((x, y)) = next.as_unsigned() {
-                if in_ibounds(grid, next) && grid[x][y] == this_ch {
+                if in_bounds(grid, next) && grid[x][y] == this_ch {
                     to_visit.push(next);
                 }
             }

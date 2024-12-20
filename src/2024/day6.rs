@@ -2,8 +2,7 @@ use std::fs;
 use std::io;
 
 use aocutils::coord::Coord;
-use aocutils::grid::in_bounds;
-use aocutils::grid::{coord::GridCoord, direction::GridDirection, in_ibounds};
+use aocutils::grid::{direction::GridDirection, in_bounds};
 use aocutils::timing::Timer;
 
 fn dir_to_usize(dir: GridDirection) -> usize {
@@ -35,16 +34,17 @@ impl Guard {
             visited.push(vec![false; grid[0].len()]);
         }
 
-        while in_ibounds(grid, self.pos) {
-            let p = GridCoord::from_coord(self.pos).unwrap();
-            visited[p.x][p.y] = true;
+        while in_bounds(grid, self.pos) {
+            let (px, py) = self.pos.as_unsigned().unwrap();
+            visited[px][py] = true;
 
-            match GridCoord::from_coord(self.pos + self.dir.into()) {
-                Some(next) if in_bounds(grid, next) => {
-                    if grid[next.x][next.y] == '#' {
+            let next = self.pos + self.dir.into();
+            match next.as_unsigned() {
+                Some((nx, ny)) if in_bounds(grid, next) => {
+                    if grid[nx][ny] == '#' {
                         self.dir = self.dir.rotate_right();
                     } else {
-                        self.pos = next.to_coord().unwrap();
+                        self.pos = next;
                     }
                 }
                 _ => break,
@@ -61,13 +61,12 @@ impl Guard {
             past.push(vec![[false; 4]; r.len()]);
         }
 
-        while in_ibounds(grid, self.pos) {
+        while in_bounds(grid, self.pos) {
             let idx = dir_to_usize(self.dir);
-            let (x, y) = match GridCoord::from_coord(self.pos) {
+            let (x, y) = match self.pos.as_unsigned() {
                 Some(t) => t,
                 _ => continue,
-            }
-            .into();
+            };
             let dirs = past.get_mut(x).unwrap().get_mut(y).unwrap();
 
             if dirs[idx] {
@@ -76,12 +75,13 @@ impl Guard {
                 dirs[idx] = true;
             }
 
-            match GridCoord::from_coord(self.pos + self.dir.into()) {
-                Some(next) if in_bounds(grid, next) => {
-                    if grid[next.x][next.y] == '#' {
+            let next = self.pos + self.dir.into();
+            match next.as_unsigned() {
+                Some((nx, ny)) if in_bounds(grid, next) => {
+                    if grid[nx][ny] == '#' {
                         self.dir = self.dir.rotate_right();
                     } else {
-                        self.pos = next.to_coord().unwrap();
+                        self.pos = next;
                     }
                 }
                 _ => break,

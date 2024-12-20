@@ -29,20 +29,17 @@ impl PartialOrd for HeapElem {
     }
 }
 
-pub type DjikstraCostFn<T> = fn(&[Vec<T>], Coord, usize, Coord) -> usize;
-
 /// Takes in a starting and ending point and returns the shortest path between them
 /// if it exists
 ///
 /// @func is a function that takes the grid, the current node, the cost of reaching the
 /// current node, and the next node and retuns the cost of current -> next
 #[allow(unused)]
-pub fn djikstra<T: Copy + Clone + Ord + Debug>(
-    grid: &[Vec<T>],
-    start: Coord,
-    end: Coord,
-    func: DjikstraCostFn<T>,
-) -> Option<Vec<Coord>> {
+pub fn djikstra<T, F>(grid: &[Vec<T>], start: Coord, end: Coord, func: F) -> Option<Vec<Coord>>
+where
+    T: Copy + Clone + Ord + Debug,
+    F: Fn(&[Vec<T>], Coord, usize, Coord) -> usize,
+{
     use GridDirection::*;
 
     if grid.is_empty() || !in_ibounds(grid, start) || !in_ibounds(grid, end) {

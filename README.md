@@ -1,8 +1,6 @@
 My advent of code solutions.
 
 TODOs:
-- TODO: add timing capabilites to year 2023
-- TODO: Fixup/optimize Graph
-- TODO: Add BFS and DFS methods to Graph
-- TODO: Re-evaluate whether GridCoord is needed
-- TODO: Move GridDirection to Direction module
+- Re all days and make sure they are still correct
+- Add tests for past days where cases make sure at least the input solution is still correct
+    * Would be nice to also have example solution input tested

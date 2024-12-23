@@ -90,6 +90,20 @@ impl From<GridDirection> for Direction {
     }
 }
 
+impl From<Coord> for Option<GridDirection> {
+    fn from(value: Coord) -> Self {
+        use GridDirection::*;
+
+        match value.into() {
+            (-1, 0) => Some(Up),
+            (1, 0) => Some(Down),
+            (0, -1) => Some(Left),
+            (0, 1) => Some(Right),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct DirectionParseError;
 

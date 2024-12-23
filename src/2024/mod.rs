@@ -14,6 +14,7 @@ mod day19;
 mod day2;
 mod day20;
 mod day21;
+mod day22;
 mod day3;
 mod day4;
 mod day5;
@@ -22,7 +23,7 @@ mod day7;
 mod day8;
 mod day9;
 
-static DAYS: [fn(bool) -> io::Result<()>; 21] = [
+static DAYS: [fn(bool) -> io::Result<()>; 22] = [
     day1::run,
     day2::run,
     day3::run,
@@ -44,6 +45,7 @@ static DAYS: [fn(bool) -> io::Result<()>; 21] = [
     day19::run,
     day20::run,
     day21::run,
+    day22::run,
 ];
 
 fn run_all(benchmark: bool) {

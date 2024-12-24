@@ -340,6 +340,110 @@ impl<T> Graph<T> {
 
         paths
     }
+
+    /// Finds all complete (a set of vertices that are all interconnected) subgraphs
+    /// of size @size.
+    ///
+    /// WARNING: This method is not very performant for large graphs or sizes
+    pub fn complete(&self, size: usize) -> Vec<Vec<GraphID>> {
+        let mut cliques = Vec::new();
+
+        if size == 0 {
+            return Vec::new();
+        }
+
+        for v in self.iter() {
+            let mut queue = Vec::new();
+
+            if v.edges.len() < size {
+                continue;
+            }
+
+            queue.push((v, vec![v.get_id()], size - 1));
+
+            while let Some((v, curr, depth)) = queue.pop() {
+                if v.edges.len() < size {
+                    continue;
+                }
+
+                if depth == 0 && curr.len() == size {
+                    cliques.push(curr);
+                    continue;
+                }
+
+                for v2 in v.iter().map(|e| self.get_vertex(e.traverse()).unwrap()) {
+                    let mut valid = true;
+
+                    for id in &curr {
+                        if v2.iter().all(|e| e.traverse() != *id) {
+                            valid = false;
+                            break;
+                        }
+                    }
+
+                    if valid {
+                        let mut new_curr = curr.clone();
+                        new_curr.push(v2.get_id());
+                        queue.push((v2, new_curr, depth - 1));
+                    }
+                }
+            }
+        }
+
+        for clique in cliques.iter_mut() {
+            clique.sort();
+        }
+
+        let set: HashSet<Vec<GraphID>> = HashSet::from_iter(cliques);
+        Vec::from_iter(set)
+    }
+
+    fn bron_kerbosch_helper(
+        &self,
+        set_r: HashSet<GraphID>,
+        mut set_p: HashSet<GraphID>,
+        mut set_x: HashSet<GraphID>,
+    ) -> HashSet<GraphID> {
+        if set_p.is_empty() && set_x.is_empty() {
+            return set_r;
+        }
+
+        let mut max = HashSet::new();
+        while !set_p.is_empty() {
+            let v = self.get_vertex(*set_p.iter().next().unwrap()).unwrap();
+            let mut r = set_r.clone();
+            r.insert(v.get_id());
+
+            let v_neighbors = v.iter().map(|e| e.traverse()).collect();
+            let clique = self.bron_kerbosch_helper(
+                r,
+                set_p.intersection(&v_neighbors).copied().collect(),
+                set_x.intersection(&v_neighbors).copied().collect(),
+            );
+
+            if max.len() < clique.len() {
+                max = clique;
+            }
+
+            set_p.remove(&v.get_id());
+            set_x.insert(v.get_id());
+        }
+
+        max
+    }
+
+    /// Finds the maximum clique (a subset of connected vertices) of this Graph
+    /// using the Bron-Kerbosch algorithm (more here:
+    /// https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm)
+    pub fn bron_kerbosch(&self) -> Vec<GraphID> {
+        let p = HashSet::from_iter(self.iter().map(|v| v.get_id()));
+
+        Vec::from_iter(
+            self.bron_kerbosch_helper(HashSet::new(), p, HashSet::new())
+                .iter()
+                .copied(),
+        )
+    }
 }
 
 /* GRAPH TRAITS */

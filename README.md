@@ -1,6 +1,5 @@
 My advent of code solutions.
 
 TODOs:
-- Re all days and make sure they are still correct
-- Add tests for past days where cases make sure at least the input solution is still correct
+- Add correctness tests for past days and years (runnable with "cargo test")
     * Would be nice to also have example solution input tested

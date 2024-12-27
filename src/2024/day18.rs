@@ -4,7 +4,7 @@ use std::usize;
 
 use aocutils::coord::Coord;
 use aocutils::grid::algo::*;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 static GRIDSIZE: usize = 71;
 static TAKE_BYTES: usize = 1024;
@@ -19,7 +19,7 @@ fn cost_fn(grid: &[Vec<char>], _current: Coord, curr_cost: usize, next: Coord) -
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut grid = vec![vec!['.'; GRIDSIZE]; GRIDSIZE];
 
     for line in input.lines().take(TAKE_BYTES) {
@@ -30,18 +30,15 @@ fn part1(input: &str) {
         grid[coords[1]][coords[0]] = '#';
     }
 
-    print!(
-        "part1: {}",
-        djikstra(
-            &grid,
-            Coord::new(0, 0),
-            Coord::new(GRIDSIZE as i64 - 1, GRIDSIZE as i64 - 1),
-            cost_fn,
-        )
-        .unwrap()
-        .len()
-            - 1,
-    );
+    djikstra(
+        &grid,
+        Coord::new(0, 0),
+        Coord::new(GRIDSIZE as i64 - 1, GRIDSIZE as i64 - 1),
+        cost_fn,
+    )
+    .unwrap()
+    .len()
+        - 1
 }
 
 fn binary_search(grid: &[Vec<char>], corrupted: &Vec<(usize, usize)>) -> usize {
@@ -76,7 +73,7 @@ fn binary_search(grid: &[Vec<char>], corrupted: &Vec<(usize, usize)>) -> usize {
     middle - 1
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> String {
     let mut grid = vec![vec!['.'; GRIDSIZE]; GRIDSIZE];
     let mut corrupted = Vec::new();
 
@@ -94,15 +91,13 @@ fn part2(input: &str) {
 
     let idx = binary_search(&grid, &corrupted);
     let c = corrupted[idx];
-    print!("part2: {},{}", c.1, c.0);
+    format!("{},{}", c.1, c.0)
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day18.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

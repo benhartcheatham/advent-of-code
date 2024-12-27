@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn validate_pages(rules: &HashMap<usize, Vec<usize>>, pages: &Vec<usize>) -> usize {
     let mut printed = [false; 100];
@@ -85,33 +85,25 @@ fn parse_input(input: &str) -> (HashMap<usize, Vec<usize>>, Vec<Vec<usize>>) {
     (rules, pages)
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let (rules, pages) = parse_input(input);
 
-    print!(
-        "part1: {}",
-        pages
-            .iter()
-            .map(|p| validate_pages(&rules, p))
-            .sum::<usize>()
-    );
+    pages
+        .iter()
+        .map(|p| validate_pages(&rules, p))
+        .sum::<usize>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let (rules, pages) = parse_input(input);
 
-    print!(
-        "part2: {}",
-        pages.iter().map(|p| fix_pages(&rules, p)).sum::<usize>()
-    );
+    pages.iter().map(|p| fix_pages(&rules, p)).sum::<usize>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day5.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

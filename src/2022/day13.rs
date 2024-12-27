@@ -3,7 +3,7 @@ use std::fmt::Display;
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 #[derive(Debug, Clone, Eq)]
 enum ListItem {
@@ -103,7 +103,7 @@ impl PartialOrd for ListItem {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut packets: Vec<(ListItem, ListItem)> = Vec::new();
 
     let mut pair = (ListItem::Integer(0), ListItem::Integer(0));
@@ -124,17 +124,14 @@ fn part1(input: &str) {
         i += 1;
     }
 
-    print!(
-        "part1: {}",
-        packets
-            .iter()
-            .enumerate()
-            .filter_map(|(i, (p1, p2))| if p1 < p2 { Some(i + 1) } else { None })
-            .sum::<usize>()
-    );
+    packets
+        .iter()
+        .enumerate()
+        .filter_map(|(i, (p1, p2))| if p1 < p2 { Some(i + 1) } else { None })
+        .sum::<usize>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut packets: Vec<ListItem> = Vec::new();
 
     for line in input.lines() {
@@ -152,26 +149,23 @@ fn part2(input: &str) {
 
     packets.sort();
 
-    print!(
-        "part2: {}",
-        packets
-            .iter()
-            .enumerate()
-            .filter_map(|(i, p)| if p == &divider1 || p == &divider2 {
+    packets
+        .iter()
+        .enumerate()
+        .filter_map(|(i, p)| {
+            if p == &divider1 || p == &divider2 {
                 Some(i + 1)
             } else {
                 None
-            })
-            .product::<usize>()
-    );
+            }
+        })
+        .product::<usize>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day13.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

@@ -3,9 +3,9 @@ use std::fs;
 use std::io;
 use std::io::Error;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
-fn part1(input: &str) -> io::Result<()> {
+fn part1(input: &str) -> io::Result<usize> {
     let mut last_chars: VecDeque<char> = VecDeque::new();
 
     for (i, c) in input.char_indices() {
@@ -13,8 +13,7 @@ fn part1(input: &str) -> io::Result<()> {
 
         if last_chars.len() == 4 {
             if HashSet::<&char>::from_iter(last_chars.iter()).len() == 4 {
-                print!("part1: {}", i + 1);
-                return Ok(());
+                return Ok(i + 1);
             }
 
             last_chars.pop_front();
@@ -24,7 +23,7 @@ fn part1(input: &str) -> io::Result<()> {
     Err(Error::new(io::ErrorKind::InvalidData, ""))
 }
 
-fn part2(input: &str) -> io::Result<()> {
+fn part2(input: &str) -> io::Result<usize> {
     let mut last_chars: VecDeque<char> = VecDeque::new();
 
     for (i, c) in input.char_indices() {
@@ -32,8 +31,7 @@ fn part2(input: &str) -> io::Result<()> {
 
         if last_chars.len() == 14 {
             if HashSet::<&char>::from_iter(last_chars.iter()).len() == 14 {
-                print!("part2: {}", i + 1);
-                return Ok(());
+                return Ok(i + 1);
             }
 
             last_chars.pop_front();
@@ -43,15 +41,10 @@ fn part2(input: &str) -> io::Result<()> {
     Err(Error::new(io::ErrorKind::InvalidData, ""))
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day6.txt")?;
-    let mut timer = Timer::start(benchmark);
-
-    part1(&input)?;
-    timer.print();
-    timer.reset();
-    part2(&input)?;
-    timer.print();
+    timeln!("part1: {}", part1(&input)?);
+    timeln!("part2: {}", part2(&input)?);
 
     Ok(())
 }

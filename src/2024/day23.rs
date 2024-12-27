@@ -4,9 +4,9 @@ use std::fs;
 use std::io;
 
 use aocutils::graph::*;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut network = Graph::new();
     let mut edges = Vec::new();
     let mut nodes = HashSet::new();
@@ -30,21 +30,18 @@ fn part1(input: &str) {
         network.add_edge_bidirectional(v1, v2, 0);
     }
 
-    print!(
-        "part1: {}",
-        network
-            .complete(3)
-            .iter()
-            .filter(|clique| clique.iter().any(|v| network
-                .get_vertex(*v)
-                .unwrap()
-                .label
-                .starts_with('t')))
-            .count()
-    );
+    network
+        .complete(3)
+        .iter()
+        .filter(|clique| {
+            clique
+                .iter()
+                .any(|v| network.get_vertex(*v).unwrap().label.starts_with('t'))
+        })
+        .count()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> String {
     let mut network = Graph::new();
     let mut edges = Vec::new();
     let mut nodes = HashSet::new();
@@ -75,21 +72,13 @@ fn part2(input: &str) {
         .collect::<Vec<&str>>();
     names.sort();
 
-    print!("part2: ");
-
-    for n in names.iter().take(names.len() - 1) {
-        print!("{},", n);
-    }
-
-    print!("{}", names[names.len() - 1]);
+    names.join(",").to_string()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day23.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

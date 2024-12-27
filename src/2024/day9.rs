@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 #[derive(Debug, Clone, Copy)]
 struct Block {
@@ -69,7 +69,7 @@ fn memset(blocks: &mut [Block], idx: usize, len: usize, block: Block) {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut blocks = Vec::new();
     let mut id = 0;
 
@@ -103,18 +103,15 @@ fn part1(input: &str) {
         j -= 1;
     }
 
-    print!(
-        "part1: {}",
-        blocks
-            .iter()
-            .enumerate()
-            .filter(|(_, b)| !b.is_free())
-            .map(|(i, b)| i * b.id)
-            .sum::<usize>()
-    );
+    blocks
+        .iter()
+        .enumerate()
+        .filter(|(_, b)| !b.is_free())
+        .map(|(i, b)| i * b.id)
+        .sum::<usize>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut blocks = Vec::new();
     let mut files = Vec::new();
     let mut freespace = Vec::new();
@@ -148,23 +145,18 @@ fn part2(input: &str) {
         }
     }
 
-    print!(
-        "part2: {}",
-        blocks
-            .iter()
-            .enumerate()
-            .filter(|(_, b)| !b.is_free())
-            .map(|(i, b)| i * b.id)
-            .sum::<usize>()
-    );
+    blocks
+        .iter()
+        .enumerate()
+        .filter(|(_, b)| !b.is_free())
+        .map(|(i, b)| i * b.id)
+        .sum::<usize>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day9.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

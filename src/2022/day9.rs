@@ -4,7 +4,7 @@ use std::io;
 use aocutils::coord::Coord;
 use aocutils::direction::*;
 use aocutils::grid::direction::GridDirection;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn move_head(mut hdx: (i64, i64), dir: Direction) -> (i64, i64) {
     use Direction::*;
@@ -61,7 +61,7 @@ fn update_tail(hdx: (i64, i64), mut tdx: (i64, i64)) -> (i64, i64) {
     tdx
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut instructions: Vec<(Direction, usize)> = Vec::new();
     let mut seen: Vec<(i64, i64)> = Vec::new();
 
@@ -87,10 +87,10 @@ fn part1(input: &str) {
         }
     }
 
-    print!("part1: {}", seen.len());
+    seen.len()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut instructions: Vec<(Direction, usize)> = Vec::new();
     let mut seen: Vec<(i64, i64)> = Vec::new();
 
@@ -106,7 +106,6 @@ fn part2(input: &str) {
     seen.push(knots[9]);
     for (dir, n) in instructions {
         for _ in 0..n {
-            // println!("instruction: {:?}", (dir, n));
             knots[0] = move_head(knots[0], dir);
 
             for i in 1..knots.len() {
@@ -119,15 +118,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", seen.len());
+    seen.len()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day9.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

@@ -6,7 +6,7 @@ use aocutils::coord::Coord;
 use aocutils::grid::direction::GridDirection;
 use aocutils::grid::direction::DIRECTIONS;
 use aocutils::grid::in_bounds;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn flood(grid: &[Vec<char>], coord: Coord) -> HashSet<Coord> {
     let mut points = HashSet::new();
@@ -123,7 +123,7 @@ fn sides(points: &HashSet<Coord>, dir: GridDirection, mut min: i64) -> usize {
     sides
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut grid: Vec<Vec<char>> = Vec::new();
 
     for line in input.lines() {
@@ -149,10 +149,10 @@ fn part1(input: &str) {
         }
     }
 
-    print!("part1: {}", cost);
+    cost
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     use GridDirection::*;
 
     let mut grid: Vec<Vec<char>> = Vec::new();
@@ -189,15 +189,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", cost);
+    cost
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day12.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

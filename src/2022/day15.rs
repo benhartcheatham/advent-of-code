@@ -3,7 +3,7 @@ use std::fs;
 use std::io;
 
 use aocutils::coord::*;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 struct Sensor {
     coord: Coord,
@@ -74,7 +74,7 @@ impl Sensor {
     }
 }
 
-fn part1(input: &str, row: i64) {
+fn part1(input: &str, row: i64) -> i64 {
     let mut sensors = Vec::new();
 
     for line in input.lines() {
@@ -116,10 +116,10 @@ fn part1(input: &str, row: i64) {
         }
     }
 
-    println!("part1: {}", max - min);
+    max - min
 }
 
-fn part2(input: &str, low: Coord, high: Coord) {
+fn part2(input: &str, low: Coord, high: Coord) -> i64 {
     let mut sensors = Vec::new();
 
     for line in input.lines() {
@@ -147,40 +147,33 @@ fn part2(input: &str, low: Coord, high: Coord) {
 
     let covers: Vec<HashMap<i64, Coord>> = sensors.iter().map(|s| s.cover()).collect();
     let (mut x, mut y) = low.into();
-    while y <= high.y {
+    let mut skipped = true;
+    while y <= high.y && !skipped {
         if x > high.x {
             y += 1;
             x = low.x;
         }
 
-        let mut skipped = false;
+        skipped = false;
         for c in &covers {
             if let Some(coord) = Sensor::skip_cover(Coord::new(x, y), c) {
                 (x, y) = coord.into();
                 skipped = true;
-            }
-
-            if skipped {
                 break;
             }
         }
-
-        if !skipped {
-            println!("part2: {}", x * 4_000_000 + y);
-            break;
-        }
     }
+
+    x * 4_000_000 + y
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day15.txt")?;
-    let mut timer = Timer::start(benchmark);
-
-    part1(&input, 2_000_000);
-    timer.print();
-    timer.reset();
-    part2(&input, Coord::new(0, 0), Coord::new(4_000_000, 4_000_000));
-    timer.print();
+    timeln!("part1: {}", part1(&input, 2_000_000));
+    timeln!(
+        "part2: {}",
+        part2(&input, Coord::new(0, 0), Coord::new(4_000_000, 4_000_000))
+    );
 
     Ok(())
 }

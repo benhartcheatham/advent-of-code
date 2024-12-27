@@ -5,7 +5,7 @@ use std::io;
 use aocutils::coord::Coord;
 use aocutils::grid::direction::GridDirection;
 use aocutils::grid::in_bounds;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Cell {
@@ -193,7 +193,7 @@ impl Robot {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut lines = input.lines();
     let mut grid = Vec::new();
     let mut robot = Robot::new(Coord::new(0, 0));
@@ -228,23 +228,21 @@ fn part1(input: &str) {
         robot.push(&mut grid, m);
     }
 
-    print!(
-        "part1: {}",
-        grid.iter()
-            .enumerate()
-            .map(|(i, row)| row
-                .iter()
+    grid.iter()
+        .enumerate()
+        .map(|(i, row)| {
+            row.iter()
                 .enumerate()
                 .map(|(j, cell)| match cell {
                     Some(Cell::Box) => i * 100 + j,
                     _ => 0,
                 })
-                .sum::<usize>())
-            .sum::<usize>()
-    );
+                .sum::<usize>()
+        })
+        .sum::<usize>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut lines = input.lines();
     let mut grid = Vec::new();
     let mut robot = Robot::new(Coord::new(0, 0));
@@ -292,28 +290,24 @@ fn part2(input: &str) {
         robot.push(&mut grid, *m);
     }
 
-    print!(
-        "part2: {}",
-        grid.iter()
-            .enumerate()
-            .map(|(i, row)| row
-                .iter()
+    grid.iter()
+        .enumerate()
+        .map(|(i, row)| {
+            row.iter()
                 .enumerate()
                 .map(|(j, cell)| match cell {
                     Some(Cell::WideBoxLeft) => i * 100 + j,
                     _ => 0,
                 })
-                .sum::<usize>())
-            .sum::<usize>()
-    );
+                .sum::<usize>()
+        })
+        .sum::<usize>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day15.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

@@ -3,7 +3,7 @@ use std::fs;
 use std::io;
 
 use aocutils::coord::Coord;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 struct Robot {
     pos: Coord,
@@ -39,7 +39,7 @@ impl Robot {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut robots = Vec::new();
     let (rows, cols) = (103, 101);
 
@@ -83,10 +83,10 @@ fn part1(input: &str) {
         quads[i] += 1;
     }
 
-    print!("part1: {}", quads.iter().product::<usize>());
+    quads.iter().product::<usize>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> i32 {
     let mut robots = Vec::new();
     let (rows, cols) = (103, 101);
 
@@ -138,15 +138,13 @@ fn part2(input: &str) {
         i += 1;
     }
 
-    print!("part2: {}", i + 1);
+    i + 1
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day14.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

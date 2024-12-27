@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 struct Grid {
     grid: Vec<Vec<char>>,
@@ -103,32 +103,30 @@ fn parse_input(input: &str) -> (Grid, Vec<(usize, usize, usize)>) {
     (grid, instructions)
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> String {
     let (mut grid, instructions) = parse_input(input);
 
     for (num, from, to) in instructions {
         grid.do_move(num, from, to);
     }
 
-    print!("part1: {}", grid.skim_top());
+    grid.skim_top()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> String {
     let (mut grid, instructions) = parse_input(input);
 
     for (num, from, to) in instructions {
         grid.do_multi_move(num, from, to);
     }
 
-    print!("part2: {}", grid.skim_top());
+    grid.skim_top()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day5.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

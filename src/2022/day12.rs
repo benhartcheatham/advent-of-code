@@ -3,7 +3,7 @@ use std::io;
 
 use aocutils::coord::Coord;
 use aocutils::grid::algo::*;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn cost_fn(grid: &[Vec<u8>], u: Coord, _cost: usize, v: Coord) -> usize {
     let (ux, uy) = u.as_unsigned().unwrap();
@@ -19,7 +19,7 @@ fn cost_fn(grid: &[Vec<u8>], u: Coord, _cost: usize, v: Coord) -> usize {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut cells = Vec::new();
     let (mut start, mut end) = (Coord::new(0, 0), Coord::new(0, 0));
     for (i, line) in input.lines().map(|l| l.as_bytes()).enumerate() {
@@ -43,10 +43,10 @@ fn part1(input: &str) {
 
     let path = djikstra(&cells, start, end, cost_fn).unwrap();
 
-    println!("part1: {}", path.len());
+    path.len()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut cells = Vec::new();
     let mut end = Coord::new(0, 0);
     let mut starts = Vec::new();
@@ -70,29 +70,24 @@ fn part2(input: &str) {
         }
     }
 
-    println!(
-        "part2: {}",
-        starts
-            .iter()
-            .filter_map(|s| {
-                let len = djikstra(&cells, *s, end, cost_fn).unwrap().len();
-                if len != 0 {
-                    Some(len)
-                } else {
-                    None
-                }
-            })
-            .min()
-            .unwrap_or(0)
-    );
+    starts
+        .iter()
+        .filter_map(|s| {
+            let len = djikstra(&cells, *s, end, cost_fn).unwrap().len();
+            if len != 0 {
+                Some(len)
+            } else {
+                None
+            }
+        })
+        .min()
+        .unwrap_or(0)
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day12.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

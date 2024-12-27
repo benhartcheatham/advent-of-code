@@ -5,7 +5,7 @@ use std::io;
 use aocutils::coord::Coord;
 use aocutils::graph::*;
 use aocutils::grid::direction::GridDirection;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 type PathMap = HashMap<(u8, u8), Vec<Vec<u8>>>;
 
@@ -149,7 +149,7 @@ fn find_shortest<'a>(
     min
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let npad = vec![
         vec![b'7', b'8', b'9'],
         vec![b'4', b'5', b'6'],
@@ -191,10 +191,10 @@ fn part1(input: &str) {
         complexity += len * n;
     }
 
-    print!("part1: {}", complexity);
+    complexity
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let npad = vec![
         vec![b'7', b'8', b'9'],
         vec![b'4', b'5', b'6'],
@@ -236,15 +236,13 @@ fn part2(input: &str) {
         complexity += len * n;
     }
 
-    print!("part2: {}", complexity);
+    complexity
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day21.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

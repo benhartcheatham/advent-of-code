@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn check_safety(level: &[i64]) -> bool {
     let increasing = level[0] < level[1];
@@ -17,7 +17,7 @@ fn check_safety(level: &[i64]) -> bool {
     true
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut levels: Vec<Vec<i64>> = Vec::new();
 
     for line in input.lines() {
@@ -28,13 +28,10 @@ fn part1(input: &str) {
         );
     }
 
-    print!(
-        "part1: {}",
         levels.iter().filter(|l| check_safety(l)).count()
-    );
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> i32 {
     let mut levels: Vec<Vec<i64>> = Vec::new();
     let mut count = 0;
 
@@ -64,15 +61,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", count);
+    count
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day2.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

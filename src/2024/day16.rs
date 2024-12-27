@@ -8,7 +8,7 @@ use aocutils::graph::*;
 use aocutils::grid::direction::GridDirection;
 use aocutils::grid::direction::DIRECTIONS;
 use aocutils::grid::in_bounds;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn insert_node(
     coord: Coord,
@@ -82,7 +82,7 @@ fn connect_nodes(
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> i64 {
     let mut grid = Vec::new();
     let mut start = Coord::new(0, 0);
     let mut end = Coord::new(0, 0);
@@ -114,11 +114,7 @@ fn part1(input: &str) {
                 continue;
             }
 
-            insert_node(
-                Coord::new(i as i64, j as i64),
-                &mut id_map,
-                &mut graph,
-            );
+            insert_node(Coord::new(i as i64, j as i64), &mut id_map, &mut graph);
         }
     }
 
@@ -134,23 +130,22 @@ fn part1(input: &str) {
         .unwrap();
     let paths = graph.djikstra(*start);
 
-    print!(
-        "part1: {}",
-        id_map
-            .get(&end)
-            .unwrap()
-            .iter()
-            .map(|eid| paths
+    id_map
+        .get(&end)
+        .unwrap()
+        .iter()
+        .map(|eid| {
+            paths
                 .iter()
                 .find(|(vid, _)| *vid == *eid)
                 .unwrap_or(&(0, 0))
-                .1)
-            .min()
-            .unwrap()
-    );
+                .1
+        })
+        .min()
+        .unwrap()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut grid = Vec::new();
     let mut start = Coord::new(0, 0);
     let mut end = Coord::new(0, 0);
@@ -182,11 +177,7 @@ fn part2(input: &str) {
                 continue;
             }
 
-            insert_node(
-                Coord::new(i as i64, j as i64),
-                &mut id_map,
-                &mut graph,
-            );
+            insert_node(Coord::new(i as i64, j as i64), &mut id_map, &mut graph);
         }
     }
 
@@ -221,15 +212,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", set.len());
+    set.len()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day16.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

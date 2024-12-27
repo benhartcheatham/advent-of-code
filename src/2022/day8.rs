@@ -3,7 +3,7 @@ use std::io;
 
 use aocutils::coord::Coord;
 use aocutils::grid::direction::GridDirection;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 #[derive(Debug)]
 struct Tree {
@@ -36,8 +36,18 @@ fn mark_visible(grid: &mut Vec<Vec<Tree>>, start: (i64, i64), dir: GridDirection
     }
 
     match dir {
-        Up | Down => mark_visible(grid, (Into::<Coord>::into(dir).x + start.0, start.1), dir, max),
-        Left | Right => mark_visible(grid, (start.0, Into::<Coord>::into(dir).y + start.1), dir, max),
+        Up | Down => mark_visible(
+            grid,
+            (Into::<Coord>::into(dir).x + start.0, start.1),
+            dir,
+            max,
+        ),
+        Left | Right => mark_visible(
+            grid,
+            (start.0, Into::<Coord>::into(dir).y + start.1),
+            dir,
+            max,
+        ),
     }
 }
 
@@ -85,7 +95,7 @@ fn find_scenic_score(grid: &[Vec<Tree>], idx: (i64, i64)) -> usize {
     nums.into_iter().reduce(|acc, e| acc * e).unwrap()
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut grid = Vec::new();
 
     for line in input.lines() {
@@ -111,15 +121,12 @@ fn part1(input: &str) {
         mark_visible(&mut grid, (len, i), GridDirection::Up, 0);
     }
 
-    print!(
-        "part1: {}",
-        grid.iter()
-            .map(|r| r.iter().filter(|t| t.is_visible).count())
-            .sum::<usize>()
-    );
+    grid.iter()
+        .map(|r| r.iter().filter(|t| t.is_visible).count())
+        .sum::<usize>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut grid = Vec::new();
 
     for line in input.lines() {
@@ -138,21 +145,16 @@ fn part2(input: &str) {
         }
     }
 
-    print!(
-        "part2: {}",
-        grid.iter()
-            .map(|r| r.iter().map(|t| t.scenic_score).max().unwrap())
-            .max()
-            .unwrap()
-    );
+    grid.iter()
+        .map(|r| r.iter().map(|t| t.scenic_score).max().unwrap())
+        .max()
+        .unwrap()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day8.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

@@ -1,7 +1,7 @@
 use std::fs;
 use std::{io, ops::RangeInclusive};
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 trait Within<T: PartialOrd> {
     fn within(&self, other: &RangeInclusive<T>) -> bool;
@@ -26,54 +26,50 @@ impl<T: PartialOrd> Overlap<T> for RangeInclusive<T> {
     }
 }
 
-fn part1(input: &str) {
-    print!(
-        "part1: {}",
-        input
-            .lines()
-            .map(|s| {
-                // Parse input into Vec<u32> of format [n1, n2, n3, n4]
-                s.split([',', '-'])
-                    .filter_map(|c| c.parse().ok())
-                    .collect::<Vec<u32>>()
-            })
-            .map(|v| (
+fn part1(input: &str) -> usize {
+    input
+        .lines()
+        .map(|s| {
+            // Parse input into Vec<u32> of format [n1, n2, n3, n4]
+            s.split([',', '-'])
+                .filter_map(|c| c.parse().ok())
+                .collect::<Vec<u32>>()
+        })
+        .map(|v| {
+            (
                 // Create ranges based off of Vec (must have lower number first due to how Ranges work)
                 v[0].min(v[1])..=v[0].max(v[1]),
-                v[2].min(v[3])..=v[2].max(v[3])
-            ))
-            .filter(|(r1, r2)| r1.within(r2) || r2.within(r1)) // Filter to only ranges that are
-            // fully contained in other
-            .count()
-    );
+                v[2].min(v[3])..=v[2].max(v[3]),
+            )
+        })
+        .filter(|(r1, r2)| r1.within(r2) || r2.within(r1)) // Filter to only ranges that are
+        // fully contained in other
+        .count()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     // same as part1, but count overlapping instead of contained
-    print!(
-        "part2: {}",
-        input
-            .lines()
-            .map(|s| {
-                s.split([',', '-'])
-                    .filter_map(|c| c.parse().ok())
-                    .collect::<Vec<u32>>()
-            })
-            .map(|v| (
+    input
+        .lines()
+        .map(|s| {
+            s.split([',', '-'])
+                .filter_map(|c| c.parse().ok())
+                .collect::<Vec<u32>>()
+        })
+        .map(|v| {
+            (
                 v[0].min(v[1])..=v[0].max(v[1]),
-                v[2].min(v[3])..=v[2].max(v[3])
-            ))
-            .filter(|(r1, r2)| r1.overlaps(r2))
-            .count()
-    );
+                v[2].min(v[3])..=v[2].max(v[3]),
+            )
+        })
+        .filter(|(r1, r2)| r1.overlaps(r2))
+        .count()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day4.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

@@ -5,7 +5,7 @@ use aocutils::coord::Coord;
 use aocutils::direction::Direction;
 use aocutils::direction::DIRECTIONS;
 use aocutils::grid::in_bounds;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn search(grid: &[Vec<char>], mut coord: Coord, xdir: i64, ydir: i64, needle: &str) -> u64 {
     for ch in needle.chars() {
@@ -67,7 +67,7 @@ fn search_cross(grid: &[Vec<char>], coord: Coord) -> u64 {
     1
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> u64 {
     let mut grid: Vec<Vec<char>> = Vec::new();
     let mut cnt = 0;
 
@@ -86,10 +86,10 @@ fn part1(input: &str) {
         }
     }
 
-    print!("part1: {}", cnt);
+    cnt
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> u64 {
     let mut grid: Vec<Vec<char>> = Vec::new();
     let mut cnt = 0;
 
@@ -103,15 +103,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", cnt);
+    cnt
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day4.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

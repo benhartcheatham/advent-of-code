@@ -2,9 +2,9 @@ use std::collections::HashSet;
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
-fn part1(input: &str) {
+fn part1(input: &str) -> u64 {
     let mut sum: u64 = 0;
 
     for line in input.lines() {
@@ -22,11 +22,10 @@ fn part1(input: &str) {
             .sum::<u64>();
     }
 
-    print!("part1: {}", sum);
+    sum
 }
 
-#[allow(unused)]
-fn part2(input: &str) {
+fn part2(input: &str) -> u64 {
     let mut sum: u64 = 0;
     let mut group: Vec<HashSet<u8>> = Vec::new();
 
@@ -48,15 +47,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", sum);
+    sum
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day3.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

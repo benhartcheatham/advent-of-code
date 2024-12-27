@@ -3,7 +3,7 @@ use std::io;
 
 use aocutils::coord::*;
 use aocutils::grid::{direction::*, in_bounds};
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 const EXTRA_COLS: i64 = 200;
 
@@ -120,7 +120,7 @@ fn drop_in_bounds(grid: &[Vec<Cell>], c: Coord) -> bool {
     true
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     use GridDirection::*;
     let mut grid = create_grid(input, false);
     let mut sand = Coord::new(0, 500);
@@ -149,15 +149,12 @@ fn part1(input: &str) {
         }
     }
 
-    print!(
-        "part1: {}",
-        grid.into_iter()
-            .map(|r| r.into_iter().filter(|c| *c == Cell::Sand).count())
-            .sum::<usize>()
-    );
+    grid.into_iter()
+        .map(|r| r.into_iter().filter(|c| *c == Cell::Sand).count())
+        .sum::<usize>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     use GridDirection::*;
     let mut grid = create_grid(input, true);
     let mut sand = Coord::new(0, 500 + EXTRA_COLS);
@@ -187,20 +184,15 @@ fn part2(input: &str) {
         }
     }
 
-    print!(
-        "part2: {}",
-        grid.iter()
-            .map(|r| r.iter().filter(|c| **c == Cell::Sand).count())
-            .sum::<usize>()
-    );
+    grid.iter()
+        .map(|r| r.iter().filter(|c| **c == Cell::Sand).count())
+        .sum::<usize>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day14.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

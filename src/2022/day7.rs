@@ -4,7 +4,7 @@ use std::io;
 use std::rc::Rc;
 use std::rc::Weak;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 struct File {
     name: String,
@@ -129,13 +129,13 @@ fn part1_helper(root: &Rc<RefCell<Dir>>, size: usize) -> usize {
             .sum::<usize>()
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let root = Rc::new(RefCell::new(Dir::new("/")));
 
     parse_input(&root, input);
 
     root.borrow_mut().update_size();
-    print!("part1: {}", part1_helper(&root, 100_000));
+    part1_helper(&root, 100_000)
 }
 
 fn part2_helper(root: &Rc<RefCell<Dir>>, size: usize) -> usize {
@@ -155,22 +155,21 @@ fn part2_helper(root: &Rc<RefCell<Dir>>, size: usize) -> usize {
             .unwrap_or(usize::MAX),
     )
 }
-fn part2(input: &str) {
+
+fn part2(input: &str) -> usize {
     let root = Rc::new(RefCell::new(Dir::new("/")));
 
     parse_input(&root, input);
 
     root.borrow_mut().update_size();
     let size_needed = 30_000_000 - (70_000_000 - root.borrow().size);
-    print!("part2: {}", part2_helper(&root, size_needed));
+    part2_helper(&root, size_needed)
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day7.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 enum Ops {
     Add,
@@ -87,7 +87,7 @@ impl Equation {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut eqs = Vec::new();
 
     for line in input.lines() {
@@ -109,16 +109,13 @@ fn part1(input: &str) {
         ));
     }
 
-    print!(
-        "part1: {}",
-        eqs.iter()
-            .filter(|e| e.solve())
-            .map(|e| e.goal)
-            .sum::<usize>()
-    );
+    eqs.iter()
+        .filter(|e| e.solve())
+        .map(|e| e.goal)
+        .sum::<usize>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut eqs = Vec::new();
 
     for line in input.lines() {
@@ -140,21 +137,16 @@ fn part2(input: &str) {
         ));
     }
 
-    print!(
-        "part2: {}",
-        eqs.iter()
-            .filter(|e| e.solve())
-            .map(|e| e.goal)
-            .sum::<usize>()
-    );
+    eqs.iter()
+        .filter(|e| e.solve())
+        .map(|e| e.goal)
+        .sum::<usize>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day7.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

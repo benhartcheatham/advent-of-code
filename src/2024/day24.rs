@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum GateKind {
@@ -128,7 +128,7 @@ fn build_expected_z(inputs: &HashMap<String, bool>) -> usize {
     to_usize(xs) + to_usize(ys)
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     use GateKind::*;
 
     let mut gates = Vec::new();
@@ -166,10 +166,10 @@ fn part1(input: &str) {
         num = format!("{}", if z.update(&gates, &zs, &inputs) { 1 } else { 0 }) + num.as_str();
     }
 
-    print!("part1: {}", usize::from_str_radix(&num, 2).unwrap());
+    usize::from_str_radix(&num, 2).unwrap()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> String {
     use GateKind::*;
 
     let mut gates = Vec::new();
@@ -269,19 +269,13 @@ fn part2(input: &str) {
     assert_eq!(swapped.len(), 8);
     swapped.sort();
 
-    print!("part2: ");
-    for s in swapped.iter().take(swapped.len() - 1) {
-        print!("{},", s);
-    }
-    print!("{}", swapped[swapped.len() - 1]);
+    swapped.join(",").to_string()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day24.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

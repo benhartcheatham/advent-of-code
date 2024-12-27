@@ -2,7 +2,7 @@ use std::fs;
 use std::io;
 
 use aocutils::coord::Coord;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn determinant(a: Coord, b: Coord) -> i64 {
     a.x * b.y - b.x * a.y
@@ -27,7 +27,7 @@ fn presses(buttons: (Coord, Coord), target: Coord) -> i64 {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> i64 {
     let mut info = [Coord::new(0, 0), Coord::new(0, 0)];
     let mut cnt = 0;
     let mut i = 0;
@@ -58,10 +58,10 @@ fn part1(input: &str) {
         }
     }
 
-    print!("part1: {}", cnt);
+    cnt
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> i64 {
     let mut info = [Coord::new(0, 0), Coord::new(0, 0)];
     let mut cnt = 0;
     let mut i = 0;
@@ -93,15 +93,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", cnt);
+    cnt
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day13.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

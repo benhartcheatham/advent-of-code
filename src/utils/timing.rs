@@ -1,37 +1,25 @@
-use std::time::Instant;
+#[macro_export]
+macro_rules! time {
+    ( $($args:tt)+ ) => {
+        {
+            use std::time::Instant;
 
-pub struct Timer {
-    start: Option<Instant>,
-    print: bool,
+            let start = Instant::now();
+            print!(format_args!($($args)+));
+            print!(" (Ran in {:.2?})", instant.elapsed());
+        }
+    };
 }
 
-impl Timer {
-    pub fn new(print: bool) -> Self {
-        Timer { start: None, print }
-    }
+#[macro_export]
+macro_rules! timeln {
+    ( $($args:tt)+ ) => {
+        {
+            use std::time::Instant;
 
-    pub fn start(print: bool) -> Self {
-        Timer {
-            start: Some(Instant::now()),
-            print,
+            let start = Instant::now();
+            print!("{}", format_args!($($args)+));
+            println!(" (Ran in {:.2?})", start.elapsed());
         }
-    }
-
-    pub fn reset(&mut self) {
-        self.start = Some(Instant::now());
-    }
-
-    pub fn time<F: FnOnce(&str)>(&mut self, f: F, arg: &str) {
-        self.reset();
-        f(arg);
-        self.print();
-    }
-
-    pub fn print(&mut self) {
-        if let Some(start) = self.start {
-            if self.print {
-                println!(" (Ran in {:.2?})", start.elapsed());
-            }
-        }
-    }
+    };
 }

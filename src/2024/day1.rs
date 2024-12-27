@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
-fn part1(input: &str) {
+fn part1(input: &str) -> u64 {
     let mut left = Vec::new();
     let mut right = Vec::new();
 
@@ -20,16 +20,13 @@ fn part1(input: &str) {
 
     left.sort();
     right.sort();
-    print!(
-        "part1: {}",
-        left.iter()
-            .zip(right.iter())
-            .map(|(n1, n2)| n1.abs_diff(*n2))
-            .sum::<u64>()
-    );
+    left.iter()
+        .zip(right.iter())
+        .map(|(n1, n2)| n1.abs_diff(*n2))
+        .sum::<u64>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> i64 {
     let mut left = Vec::new();
     let mut right = HashMap::new();
 
@@ -55,15 +52,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", map.values().sum::<i64>());
+    map.values().sum::<i64>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day1.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

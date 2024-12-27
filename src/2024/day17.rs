@@ -2,7 +2,7 @@ use std::fmt::Display;
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 use z3::ast::{Ast, BV};
 
 #[derive(Clone, Debug)]
@@ -174,19 +174,19 @@ impl Computer {
 
 impl Display for Computer {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for i in 0..(self.output.len() - 1) {
-            write!(f, "{},", self.output[i])?;
-        }
-
-        if let Some(last) = self.output.last() {
-            write!(f, "{}", last)
-        } else {
-            write!(f, "None")
-        }
+        write!(
+            f,
+            "{}",
+            self.output
+                .iter()
+                .map(|i| i.to_string())
+                .collect::<Vec<String>>()
+                .join(",")
+        )
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> Computer {
     let mut lines = input.lines();
     let mut registers = [0, 0, 0];
 
@@ -211,10 +211,10 @@ fn part1(input: &str) {
 
     let mut computer = Computer::new(registers.into(), &program);
     computer.run_program();
-    print!("part1: {}", computer);
+    computer
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> i64 {
     let mut lines = input.lines();
     let mut registers = [0, 0, 0];
 
@@ -238,15 +238,13 @@ fn part2(input: &str) {
         .collect::<Vec<u8>>();
 
     let computer = Computer::new(registers.into(), &program);
-    print!("part2: {}", computer.translate());
+    computer.translate()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day17.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

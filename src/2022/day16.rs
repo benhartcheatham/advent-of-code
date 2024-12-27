@@ -3,7 +3,7 @@ use std::fs;
 use std::io;
 
 use aocutils::graph::*;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 struct ValveState {
@@ -116,7 +116,7 @@ fn prune_graph(graph: Graph<u64>) -> Graph<u64> {
     pruned
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> u64 {
     let mut graph: Graph<u64> = Graph::new();
 
     for line in input.lines() {
@@ -153,18 +153,15 @@ fn part1(input: &str) {
     }
 
     graph = prune_graph(graph);
-    print!(
-        "part1: {}",
-        calc_pressure(
-            graph.find_vertex_by_label("AA").unwrap().get_id(),
-            30,
-            &graph
-        )
-        .0
-    );
+    calc_pressure(
+        graph.find_vertex_by_label("AA").unwrap().get_id(),
+        30,
+        &graph,
+    )
+    .0
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> u64 {
     let mut graph: Graph<u64> = Graph::new();
 
     for line in input.lines() {
@@ -211,15 +208,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", max);
+    max
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day16.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

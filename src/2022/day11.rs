@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 type MonkeyOp = fn(u64, Option<u64>) -> u64;
 
@@ -131,7 +131,7 @@ fn parse_monkeys(input: &str) -> Vec<Monkey> {
     monkeys
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut monkeys = parse_monkeys(input);
 
     for _ in 0..20 {
@@ -142,12 +142,10 @@ fn part1(input: &str) {
     }
 
     monkeys.sort_by_key(|m| m.get_num_inspected());
-    let business = monkeys[monkeys.len() - 1].get_num_inspected()
-        * monkeys[monkeys.len() - 2].get_num_inspected();
-    print!("part1: {}", business);
+    monkeys[monkeys.len() - 1].get_num_inspected() * monkeys[monkeys.len() - 2].get_num_inspected()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut monkeys = parse_monkeys(input);
 
     let divisor = monkeys.iter().map(|m| m.test).product();
@@ -164,17 +162,13 @@ fn part2(input: &str) {
     }
 
     monkeys.sort_by_key(|m| m.get_num_inspected());
-    let business = monkeys[monkeys.len() - 1].get_num_inspected()
-        * monkeys[monkeys.len() - 2].get_num_inspected();
-    print!("part2: {}", business);
+    monkeys[monkeys.len() - 1].get_num_inspected() * monkeys[monkeys.len() - 2].get_num_inspected()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day11.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

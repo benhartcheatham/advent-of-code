@@ -2,7 +2,7 @@ use std::fs;
 use std::io;
 use std::str::FromStr;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 #[derive(Debug, PartialEq)]
 enum Instructions {
@@ -105,7 +105,7 @@ impl Crt {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> i64 {
     let mut cpu = Cpu::new(20);
 
     for line in input.lines() {
@@ -119,13 +119,10 @@ fn part1(input: &str) {
         }
     }
 
-    print!(
-        "part1: {}",
-        cpu.signals.iter().step_by(2).take(6).sum::<i64>()
-    );
+    cpu.signals.iter().step_by(2).take(6).sum::<i64>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> String {
     let mut crt = Crt::new(40);
 
     for line in input.lines() {
@@ -139,22 +136,22 @@ fn part2(input: &str) {
         }
     }
 
-    println!("part2:");
+    let mut ret = String::new();
     for r in crt.screen {
         for c in r {
-            print!("{}", c);
+            ret.push(c)
         }
 
-        println!();
+        ret.push('\n');
     }
+
+    ret
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day10.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 #[derive(Debug)]
 struct SecretNumber {
@@ -37,28 +37,25 @@ impl SecretNumber {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> i64 {
     let mut nums = Vec::new();
 
     for line in input.lines() {
         nums.push(SecretNumber::new(line.trim().parse::<i64>().unwrap()));
     }
 
-    print!(
-        "part1: {}",
-        nums.iter_mut()
-            .map(|n| {
-                for _ in 0..2000 {
-                    n.next_number();
-                }
+    nums.iter_mut()
+        .map(|n| {
+            for _ in 0..2000 {
+                n.next_number();
+            }
 
-                n.val
-            })
-            .sum::<i64>()
-    );
+            n.val
+        })
+        .sum::<i64>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> i64 {
     let mut nums = Vec::new();
 
     for line in input.lines() {
@@ -93,15 +90,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", buyers_map.into_values().max().unwrap());
+    buyers_map.into_values().max().unwrap()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day22.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

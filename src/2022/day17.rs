@@ -4,7 +4,7 @@ use std::collections::VecDeque;
 
 use aocutils::coord::*;
 use aocutils::direction::*;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 #[derive(Debug)]
 struct Space {
@@ -173,7 +173,7 @@ fn char_to_dir(ch: char) -> Direction {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     use RockTypes::*;
 
     let rocks = [Minus, Plus, Hook, Pipe, Box];
@@ -199,11 +199,10 @@ fn part1(input: &str) {
         n_rocks += 1;
     }
 
-    print!("part1: {}", space.get_highest());
+    space.get_highest()
 }
 
-#[allow(unused)]
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     use RockTypes::*;
 
     let rocks = [Minus, Plus, Hook, Pipe, Box];
@@ -232,15 +231,13 @@ fn part2(input: &str) {
         n_rocks += 1;
     }
 
-    print!("part2: {}", space.get_highest());
+    space.get_highest()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day17.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    // timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

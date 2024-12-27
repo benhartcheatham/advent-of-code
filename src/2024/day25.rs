@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn is_lock(input: &[Vec<char>]) -> bool {
     input[0].iter().all(|c| *c == '#')
@@ -38,7 +38,7 @@ fn insert(input: &Vec<Vec<char>>, locks: &mut Vec<Vec<usize>>, keys: &mut Vec<Ve
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut locks = Vec::new();
     let mut keys = Vec::new();
 
@@ -55,23 +55,20 @@ fn part1(input: &str) {
 
     insert(&curr, &mut locks, &mut keys);
 
-    print!(
-        "part1: {}",
-        locks
-            .iter()
-            .map(|lock| keys
-                .iter()
+    locks
+        .iter()
+        .map(|lock| {
+            keys.iter()
                 .filter(|key| (0..lock.len()).all(|j| key[j] > lock[j]))
-                .count())
-            .sum::<usize>()
-    );
+                .count()
+        })
+        .sum::<usize>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day25.txt")?;
-    let mut timer = Timer::new(benchmark);
 
-    timer.time(part1, &input);
+    timeln!("part1: {}", part1(&input));
 
     Ok(())
 }

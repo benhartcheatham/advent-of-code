@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn replace_min(maxes: &mut [u32], val: u32) {
     let (idx, min) = maxes
@@ -15,7 +15,7 @@ fn replace_min(maxes: &mut [u32], val: u32) {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> i32 {
     let mut highest = 0;
     let mut current = 0;
 
@@ -28,11 +28,10 @@ fn part1(input: &str) {
         }
     }
 
-    print!("part1: {}", highest);
+    highest
 }
 
-#[allow(unused)]
-fn part2(input: &str) {
+fn part2(input: &str) -> u32 {
     let mut highest = [0; 3];
     let mut current = 0;
 
@@ -46,15 +45,13 @@ fn part2(input: &str) {
     }
 
     replace_min(&mut highest, current);
-    print!("part2: {}", highest.iter().sum::<u32>());
+    highest.iter().sum::<u32>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2022/day1.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

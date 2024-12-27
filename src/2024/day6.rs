@@ -3,7 +3,7 @@ use std::io;
 
 use aocutils::coord::Coord;
 use aocutils::grid::{direction::GridDirection, in_bounds};
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn dir_to_usize(dir: GridDirection) -> usize {
     use GridDirection::*;
@@ -92,7 +92,7 @@ impl Guard {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut grid: Vec<Vec<char>> = Vec::new();
 
     for line in input.lines() {
@@ -109,17 +109,14 @@ fn part1(input: &str) {
         }
     }
 
-    print!(
-        "part1: {}",
         guard
             .simulate(&grid)
             .into_iter()
             .map(|v| v.into_iter().filter(|e| *e).count())
             .sum::<usize>()
-    );
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> i32 {
     let mut grid: Vec<Vec<char>> = Vec::new();
 
     for line in input.lines() {
@@ -154,15 +151,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", cnt);
+    cnt
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day6.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

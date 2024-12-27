@@ -6,7 +6,7 @@ use aocutils::coord::Coord;
 use aocutils::graph::Graph;
 use aocutils::grid::direction::*;
 use aocutils::grid::in_bounds;
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn can_traverse(grid: &[Vec<u32>], curr: Coord, next: Coord) -> bool {
     if !in_bounds(grid, next) {
@@ -45,7 +45,7 @@ fn build_graph(grid: &[Vec<u32>], head: Coord) -> Graph<(u32, Coord)> {
     graph
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut grid = Vec::new();
     let mut heads = Vec::new();
 
@@ -81,10 +81,10 @@ fn part1(input: &str) {
         cnt += seen.len();
     }
 
-    print!("part1: {}", cnt);
+    cnt
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut grid = Vec::new();
     let mut heads = Vec::new();
 
@@ -113,15 +113,14 @@ fn part2(input: &str) {
             .count();
     }
 
-    print!("part2: {}", cnt);
+    cnt
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day10.txt")?;
-    let mut timer = Timer::new(benchmark);
 
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

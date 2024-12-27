@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 
 fn is_possible(haystack: &Vec<&str>, needle: &str) -> bool {
     if needle.is_empty() {
@@ -40,7 +40,7 @@ fn possible_ways<'a>(
     cnt
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut lines = input.lines();
     let available: Vec<&str> = lines.next().unwrap().split(", ").collect();
     let mut patterns = Vec::new();
@@ -49,16 +49,13 @@ fn part1(input: &str) {
         patterns.push(line.trim());
     }
 
-    print!(
-        "part1: {}",
-        patterns
-            .iter()
-            .filter(|p| is_possible(&available, p))
-            .count()
-    );
+    patterns
+        .iter()
+        .filter(|p| is_possible(&available, p))
+        .count()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut lines = input.lines();
     let available: Vec<&str> = lines.next().unwrap().split(", ").collect();
     let mut patterns = Vec::new();
@@ -68,21 +65,16 @@ fn part2(input: &str) {
         patterns.push(line.trim());
     }
 
-    print!(
-        "part2: {}",
-        patterns
-            .iter()
-            .map(|p| possible_ways(&available, p, &mut map))
-            .sum::<usize>()
-    );
+    patterns
+        .iter()
+        .map(|p| possible_ways(&available, p, &mut map))
+        .sum::<usize>()
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day19.txt")?;
-    let mut timer = Timer::new(benchmark);
-
-    timer.time(part1, &input);
-    timer.time(part2, &input);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
     Ok(())
 }

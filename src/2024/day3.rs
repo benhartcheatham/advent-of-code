@@ -1,10 +1,10 @@
 use std::fs;
 use std::io;
 
-use aocutils::timing::Timer;
+use aocutils::timeln;
 use regex::Regex;
 
-fn part1(input: &str) {
+fn part1(input: &str) -> i64 {
     let pattern = Regex::new(r"mul\(([0-9]+),([0-9]+)\)").unwrap();
     let mut ret = 0;
 
@@ -12,10 +12,10 @@ fn part1(input: &str) {
         ret += n1.parse::<i64>().unwrap() * n2.parse::<i64>().unwrap();
     }
 
-    print!("part1: {}", ret);
+    ret
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> i64 {
     let pattern = Regex::new(r"mul\(([0-9]+),([0-9]+)\)|(do\(\))|(don't\(\))").unwrap();
     let mulpat = Regex::new(r"mul\(([0-9]+),([0-9]+)\)").unwrap();
     let mut enable = true;
@@ -40,14 +40,13 @@ fn part2(input: &str) {
         }
     }
 
-    print!("part2: {}", ret);
+    ret
 }
 
-pub fn run(benchmark: bool) -> io::Result<()> {
+pub fn run(_benchmark: bool) -> io::Result<()> {
     let input = fs::read_to_string("inputs/2024/day3.txt")?;
-    let mut timer = Timer::new(benchmark);
+    timeln!("part1: {}", part1(&input));
+    timeln!("part2: {}", part2(&input));
 
-    timer.time(part1, &input);
-    timer.time(part2, &input);
     Ok(())
 }

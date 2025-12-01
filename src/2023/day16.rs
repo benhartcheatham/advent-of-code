@@ -128,8 +128,7 @@ impl LightBeam {
 
         self.update_position(tiles);
 
-        if new_beam.is_some() {
-            let new_beam = new_beam.unwrap();
+        if let Some(new_beam) = new_beam {
             let r_dir = if new_beam.0 < 0 {
                 self.pos
                     .0

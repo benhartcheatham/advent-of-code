@@ -84,10 +84,10 @@ fn find_scenic_score(grid: &[Vec<Tree>], idx: (i64, i64)) -> usize {
     }
 
     // Direction::Right
-    for j in (uidx.1 + 1)..grid.len() {
+    for tree in grid[uidx.0].iter().skip(uidx.1 + 1) {
         nums[3] += 1;
 
-        if grid[uidx.0][j].height >= treeh {
+        if tree.height >= treeh {
             break;
         }
     }

@@ -7,7 +7,7 @@ fn is_lock(input: &[Vec<char>]) -> bool {
     input[0].iter().all(|c| *c == '#')
 }
 
-fn to_heights(input: &Vec<Vec<char>>, is_lock: bool) -> Vec<usize> {
+fn to_heights(input: &[Vec<char>], is_lock: bool) -> Vec<usize> {
     let mut heights = if is_lock {
         vec![0; input[0].len()]
     } else {
@@ -27,7 +27,7 @@ fn to_heights(input: &Vec<Vec<char>>, is_lock: bool) -> Vec<usize> {
     heights
 }
 
-fn insert(input: &Vec<Vec<char>>, locks: &mut Vec<Vec<usize>>, keys: &mut Vec<Vec<usize>>) {
+fn insert(input: &[Vec<char>], locks: &mut Vec<Vec<usize>>, keys: &mut Vec<Vec<usize>>) {
     let is_lock = is_lock(input);
     let heights = to_heights(input, is_lock);
 

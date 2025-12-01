@@ -100,9 +100,9 @@ fn part1(input: &str) -> usize {
     }
 
     let mut guard = Guard::new(Coord::new(0, 0), GridDirection::Up);
-    for i in 0..grid.len() {
-        for j in 0..grid[0].len() {
-            if grid[i][j] == '^' {
+    for (i, row) in grid.iter().enumerate() {
+        for (j, cell) in row.iter().enumerate().take(row.len()) {
+            if *cell == '^' {
                 guard.pos = Coord::new(i as i64, j as i64);
                 break;
             }
@@ -124,9 +124,9 @@ fn part2(input: &str) -> i32 {
     }
 
     let mut guard = Guard::new(Coord::new(0, 0), GridDirection::Up);
-    for i in 0..grid.len() {
-        for j in 0..grid[0].len() {
-            if grid[i][j] == '^' {
+    for (i, row) in grid.iter().enumerate() {
+        for (j, cell) in row.iter().enumerate().take(row.len()) {
+            if *cell == '^' {
                 guard.pos = Coord::new(i as i64, j as i64);
                 break;
             }

@@ -85,8 +85,7 @@ async fn create(
     }
 
     if session.is_none() && download {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
+        return Err(io::Error::other(
             "Session cookie file (-s option) required for --download option",
         ));
     }
@@ -132,8 +131,7 @@ async fn download_inputs(client: &Client, key: &str, year: &str, day: usize) -> 
     if let Some(text) = send_request(client, key, &url).await {
         input.write_all(text.as_bytes())?;
     } else {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
+        return Err(io::Error::other(
             format!("Error getting puzzle input for {} day {}", year, day),
         ));
     }

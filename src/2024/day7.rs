@@ -30,7 +30,7 @@ impl Ops {
 
         match self {
             Add => lhs > rhs,
-            Mul => lhs % rhs == 0,
+            Mul => lhs.is_multiple_of(rhs),
             Concat => {
                 let lhs = lhs.to_string();
                 let rhs = rhs.to_string();
@@ -71,8 +71,7 @@ impl Equation {
         self.allowed_ops
             .iter()
             .filter(|op| op.is_applicable(curr, self.operands[idx]))
-            .map(|op| self.solve_helper(op.apply(curr, self.operands[idx]), idx - 1))
-            .any(|e| e)
+            .any(|op| self.solve_helper(op.apply(curr, self.operands[idx]), idx - 1))
     }
 
     fn solve(&self) -> bool {

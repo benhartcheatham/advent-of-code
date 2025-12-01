@@ -58,7 +58,7 @@ impl Cpu {
     fn run_instruction(&mut self, inst: Instructions, val: Option<i64>) {
         self.cycle += 1;
 
-        if self.cycle % self.interval == 0 {
+        if self.cycle.is_multiple_of(self.interval) {
             self.signals.push(self.x * self.cycle as i64);
         }
 
@@ -86,7 +86,7 @@ impl Crt {
     }
 
     fn render_pixel(&mut self, inst: Instructions, val: Option<i64>) {
-        if self.pos % self.width == 0 {
+        if self.pos.is_multiple_of(self.width) {
             self.screen.push(Vec::new());
             self.pos = 0;
         }

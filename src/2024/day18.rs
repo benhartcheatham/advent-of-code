@@ -1,6 +1,5 @@
 use std::fs;
 use std::io;
-use std::usize;
 
 use aocutils::coord::Coord;
 use aocutils::grid::algo::*;
@@ -41,7 +40,7 @@ fn part1(input: &str) -> usize {
         - 1
 }
 
-fn binary_search(grid: &[Vec<char>], corrupted: &Vec<(usize, usize)>) -> usize {
+fn binary_search(grid: &[Vec<char>], corrupted: &[(usize, usize)]) -> usize {
     let (mut left, mut right) = (0, corrupted.len() - 1);
     let mut middle = 1;
 

@@ -97,7 +97,7 @@ impl<'a> Hand<'a> {
         }
     }
 
-    fn new(hand: &'a str, bid: u32) -> Hand {
+    fn new(hand: &'a str, bid: u32) -> Hand<'a> {
         Hand {
             hand,
             strength: Self::calculate_strength(hand),

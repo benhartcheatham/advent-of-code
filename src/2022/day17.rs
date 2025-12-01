@@ -213,7 +213,7 @@ fn part2(input: &str) -> usize {
     let mut direction_iter = input.trim().chars().cycle().map(char_to_dir);
 
     while n_rocks < 1_000_000_000_000 {
-        if n_rocks % 1_000_000 == 0 {
+        if n_rocks.is_multiple_of(1_000_000) {
             println!("{}", n_rocks);
         }
         let rt = rocks_iter.next().unwrap();

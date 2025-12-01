@@ -12,6 +12,8 @@ mod year22;
 mod year23;
 #[path = "2024/mod.rs"]
 mod year24;
+#[path = "2025/mod.rs"]
+mod year25;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -167,6 +169,7 @@ fn run(year: &str, day: Option<usize>, benchmark: bool) -> io::Result<()> {
         "2022" => year22::run(day, benchmark),
         "2023" => year23::run(day),
         "2024" => year24::run(day, benchmark),
+        "2025" => year25::run(day, benchmark),
         _ => Ok(()),
     }
 }

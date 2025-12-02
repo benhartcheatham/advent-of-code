@@ -13,7 +13,7 @@ impl Dial {
     }
 
     fn turn(&mut self, inst: &str) -> u32 {
-        let neg = inst.chars().next().unwrap() == 'L';
+        let neg = inst.starts_with("L");
         let mut n = inst
             .chars()
             .skip(1)
@@ -76,11 +76,11 @@ pub fn run(benchmark: bool) -> io::Result<()> {
         Err(e)
     } else {
         if benchmark {
-            timeln!("part1: {}", part1(&input.as_ref().unwrap()));
-            timeln!("part2: {}", part2(&input.as_ref().unwrap()));
+            timeln!("part1: {}", part1(input.as_ref().unwrap()));
+            timeln!("part2: {}", part2(input.as_ref().unwrap()));
         } else {
-            println!("part1: {}", part1(&input.as_ref().unwrap()));
-            println!("part2: {}", part2(&input.as_ref().unwrap()));
+            println!("part1: {}", part1(input.as_ref().unwrap()));
+            println!("part2: {}", part2(input.as_ref().unwrap()));
         }
 
         Ok(())

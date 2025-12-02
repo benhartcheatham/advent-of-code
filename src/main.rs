@@ -27,7 +27,7 @@ enum Commands {
     // Run the solution for <year> <day>. If <day> isn't specified, run all solutions for <year>
     Run {
         // year to run, default to 2024
-        #[arg(short, long, default_value_t = String::from("2024"))]
+        #[arg(short, long, default_value_t = String::from("2025"))]
         year: String,
         // day to run
         #[arg(short, long)]
@@ -166,10 +166,10 @@ async fn send_request(client: &Client, session: &str, url: &str) -> Option<Strin
 
 fn run(year: &str, day: Option<usize>, benchmark: bool) -> io::Result<()> {
     match year {
-        "2022" => year22::run(day, benchmark),
-        "2023" => year23::run(day),
-        "2024" => year24::run(day, benchmark),
-        "2025" => year25::run(day, benchmark),
+        "2022" | "22" => year22::run(day, benchmark),
+        "2023" | "23" => year23::run(day),
+        "2024" | "24" => year24::run(day, benchmark),
+        "2025" | "25" => year25::run(day, benchmark),
         _ => Ok(()),
     }
 }

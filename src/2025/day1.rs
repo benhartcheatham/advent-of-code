@@ -65,11 +65,24 @@ fn part2(input: &str) -> u32 {
         .sum::<u32>()
 }
 
-pub fn run(_benchmark: bool) -> io::Result<()> {
-    let input = fs::read_to_string("inputs/2025/day1.txt")?;
+pub fn run(benchmark: bool) -> io::Result<()> {
+    let input = fs::read_to_string("inputs/2025/day1.txt");
 
-    timeln!("part1: {}", part1(&input));
-    timeln!("part2: {}", part2(&input));
+    if let Err(e) = input {
+        if e.kind() == io::ErrorKind::NotFound {
+            println!("Input file not found!");
+        }
 
-    Ok(())
+        Err(e)
+    } else {
+        if benchmark {
+            timeln!("part1: {}", part1(&input.as_ref().unwrap()));
+            timeln!("part2: {}", part2(&input.as_ref().unwrap()));
+        } else {
+            println!("part1: {}", part1(&input.as_ref().unwrap()));
+            println!("part2: {}", part2(&input.as_ref().unwrap()));
+        }
+
+        Ok(())
+    }
 }

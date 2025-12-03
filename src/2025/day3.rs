@@ -4,18 +4,15 @@ use std::io;
 use aocutils::timeln;
 
 fn bank_max(bank: &str, digits: usize) -> usize {
-    let mut mdigs: Vec<usize> = vec![0; digits];
+    let mut mdigs: Vec<char> = vec!['0'; digits];
 
-    for (i, n) in bank
-        .char_indices()
-        .map(|(i, c)| (i, c.to_digit(10).unwrap() as usize))
-    {
+    for (i, n) in bank.char_indices() {
         for j in 0..mdigs.len() {
             if n > mdigs[j] && (mdigs.len() - j) <= (bank.len() - i) {
                 mdigs[j] = n;
 
                 for m in mdigs.iter_mut().skip(j + 1) {
-                    *m = 0;
+                    *m = '0';
                 }
 
                 break;
@@ -23,11 +20,7 @@ fn bank_max(bank: &str, digits: usize) -> usize {
         }
     }
 
-    mdigs
-        .iter()
-        .enumerate()
-        .map(|(i, n)| 10_usize.pow((mdigs.len() - 1 - i) as u32) * n)
-        .sum()
+    mdigs.iter().collect::<String>().parse().unwrap()
 }
 
 fn part1(input: &str) -> usize {

@@ -2,10 +2,12 @@ use std::io;
 
 mod day1;
 mod day2;
+mod day3;
 
-static DAYS: [fn(bool) -> io::Result<()>; 2] = [
+static DAYS: [fn(bool) -> io::Result<()>; 3] = [
     day1::run,
     day2::run,
+    day3::run,
 ];
 
 fn run_all(benchmark: bool) {

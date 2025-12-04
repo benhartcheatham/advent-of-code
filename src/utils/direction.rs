@@ -12,6 +12,22 @@ pub const DIRECTIONS: [Direction; 8] = [
     Direction::SW,
 ];
 
+#[allow(unused)]
+pub const NEWS: [Direction; 4] = [
+    Direction::N,
+    Direction::E,
+    Direction::W,
+    Direction::S,
+];
+
+#[allow(unused)]
+pub const DIAGS: [Direction; 4] = [
+    Direction::NE,
+    Direction::NW,
+    Direction::SE,
+    Direction::SW,
+];
+
 #[derive(Debug, Clone, Copy)]
 pub enum Direction {
     N,
@@ -24,6 +40,7 @@ pub enum Direction {
     SW,
 }
 
+#[allow(unused)]
 impl Direction {
     pub fn invert(&self) -> Self {
         use Direction::*;
@@ -37,6 +54,36 @@ impl Direction {
             NW => SE,
             SE => NW,
             SW => NE,
+        }
+    }
+
+    pub fn rotate_right(&self) -> Self {
+        use Direction::*;
+
+        match &self {
+            N => NE,
+            NE => E,
+            E => SE,
+            SE => S,
+            S => SW,
+            SW => W,
+            W => NW,
+            NW => N,
+        }
+    }
+
+    pub fn rotate_left(&self) -> Self {
+        use Direction::*;
+
+        match &self {
+            N => NW,
+            NW => W,
+            W => SW,
+            SW => S,
+            S => SE,
+            SE => E,
+            E => NE,
+            NE => N,
         }
     }
 }

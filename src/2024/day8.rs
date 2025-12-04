@@ -70,10 +70,10 @@ fn part1(input: &str) -> usize {
     let mut antinodes = HashSet::new();
     for i in 0..antenna.len() {
         for j in 0..antenna.len() {
-            if let Some(anti) = antenna[i].find_antinode(&antenna[j]) {
-                if Antenna::in_bounds(anti, xlen, ylen) {
-                    antinodes.insert(anti);
-                }
+            if let Some(anti) = antenna[i].find_antinode(&antenna[j])
+                && Antenna::in_bounds(anti, xlen, ylen)
+            {
+                antinodes.insert(anti);
             }
         }
     }

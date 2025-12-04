@@ -8,10 +8,10 @@ fn validate_pages(rules: &HashMap<usize, Vec<usize>>, pages: &Vec<usize>) -> usi
     let mut printed = [false; 100];
 
     for p in pages {
-        if let Some(rules) = rules.get(p) {
-            if rules.iter().any(|p| printed[*p]) {
-                return 0;
-            }
+        if let Some(rules) = rules.get(p)
+            && rules.iter().any(|p| printed[*p])
+        {
+            return 0;
         }
 
         printed[*p] = true;

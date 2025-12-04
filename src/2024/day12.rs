@@ -3,8 +3,8 @@ use std::fs;
 use std::io;
 
 use aocutils::coord::Coord;
-use aocutils::grid::direction::GridDirection;
 use aocutils::grid::direction::DIRECTIONS;
+use aocutils::grid::direction::GridDirection;
 use aocutils::grid::in_bounds;
 use aocutils::timeln;
 
@@ -25,10 +25,11 @@ fn flood(grid: &[Vec<char>], coord: Coord) -> HashSet<Coord> {
         for dir in DIRECTIONS {
             let next = c + dir.into();
 
-            if let Some((x, y)) = next.as_unsigned() {
-                if in_bounds(grid, next) && grid[x][y] == this_ch {
-                    to_visit.push(next);
-                }
+            if let Some((x, y)) = next.as_unsigned()
+                && in_bounds(grid, next)
+                && grid[x][y] == this_ch
+            {
+                to_visit.push(next);
             }
         }
     }

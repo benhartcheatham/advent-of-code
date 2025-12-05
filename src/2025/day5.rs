@@ -4,30 +4,22 @@ use std::ops::RangeInclusive;
 
 use aocutils::timeln;
 
-fn overlap(r1: &RangeInclusive<usize>, r2: &RangeInclusive<usize>) -> bool {
-    (r2.start() <= r1.end() && r2.end() >= r1.end())
-        || (r1.start() <= r2.end() && r1.end() >= r2.end())
-}
-
 fn merge(mut ranges: Vec<RangeInclusive<usize>>) -> Vec<RangeInclusive<usize>> {
-    loop {
-        let mut merged = Vec::new();
+    let mut merged = Vec::new();
+    ranges.sort_by(|r1, r2| r1.start().cmp(r2.start()));
 
-        for r in ranges.iter() {
-            match merged.iter_mut().find(|m| overlap(r, m)) {
-                Some(m) => *m = usize::min(*r.start(), *m.start())..=usize::max(*r.end(), *m.end()),
-                None => merged.push(r.clone()),
-            }
+    merged.push(ranges[0].clone());
+    for r in ranges {
+        let m = merged.last_mut().unwrap();
+
+        if r.start() <= m.end() {
+            *m = *m.start()..=usize::max(*r.end(), *m.end());
+        } else {
+            merged.push(r.clone());
         }
-
-        if ranges.eq(&merged) {
-            break;
-        }
-
-        ranges = merged;
     }
 
-    ranges
+    merged
 }
 
 fn parse_input(input: &str) -> (Vec<RangeInclusive<usize>>, Vec<usize>) {

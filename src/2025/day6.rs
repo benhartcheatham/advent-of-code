@@ -51,8 +51,8 @@ fn part2(input: &str) -> usize {
         }
 
         numbers.push(String::new());
-        for i in 0..lines.len() {
-            match lines[i][j] {
+        for row in &lines {
+            match row[j] {
                 '+' => {
                     answers.push(
                         numbers
@@ -73,7 +73,7 @@ fn part2(input: &str) -> usize {
                     skip = true;
                 }
                 ' ' => continue,
-                _ => numbers.last_mut().unwrap().push(lines[i][j]),
+                _ => numbers.last_mut().unwrap().push(row[j]),
             }
         }
     }

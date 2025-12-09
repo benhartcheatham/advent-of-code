@@ -444,6 +444,38 @@ impl<T> Graph<T> {
                 .copied(),
         )
     }
+
+    /// Finds the shortest path between vertices in @self. Returned as
+    /// a HashMap where Map(i, j) is the weight of the shortest path from
+    /// vertex i to vertex j.
+    pub fn floyd_warshall(&self) -> HashMap<(GraphID, GraphID), i64> {
+        let mut paths: HashMap<(GraphID, GraphID), i64> = HashMap::new();
+        for v in self.iter() {
+            paths.insert((v.id, v.id), 0);
+
+            for v2 in self.iter().filter(|v2| v.id != v2.id) {
+                paths.insert((v.id, v2.id), i64::MAX);
+
+                for e in v.edges.iter() {
+                    paths.insert((v.id, e.traverse()), e.weight);
+                }
+            }
+        }
+
+        for k in self.iter().map(|v| v.id) {
+            for i in self.iter().map(|v| v.id) {
+                for j in self.iter().map(|v| v.id) {
+                    let d2 = paths
+                        .get(&(i, k))
+                        .unwrap()
+                        .saturating_add(*paths.get(&(k, j)).unwrap());
+                    paths.entry((i, j)).and_modify(|d| *d = i64::max(*d, d2));
+                }
+            }
+        }
+
+        paths
+    }
 }
 
 /* GRAPH TRAITS */

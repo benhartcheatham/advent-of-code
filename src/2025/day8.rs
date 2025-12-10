@@ -43,7 +43,7 @@ fn shortest_pairs(boxes: &[Coord3]) -> Vec<(usize, usize)> {
     dists.into_iter().map(|(i, j, _)| (i, j)).collect()
 }
 
-fn find_circuit(circuits: &Vec<HashSet<usize>>, b: usize) -> usize {
+fn find_circuit(circuits: &[HashSet<usize>], b: usize) -> usize {
     (0..circuits.len())
         .find(|i| circuits[*i].contains(&b))
         .unwrap()

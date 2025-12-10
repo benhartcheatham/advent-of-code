@@ -1,4 +1,9 @@
-use std::collections::VecDeque;
+extern crate lp_modeler;
+
+use lp_modeler::dsl::*;
+use lp_modeler::solvers::{CbcSolver, SolverTrait};
+
+use std::collections::{HashMap, VecDeque};
 use std::fs;
 use std::io;
 
@@ -18,11 +23,10 @@ fn min_presses(light: u64, buttons: &[u64]) -> usize {
         let l = l ^ b;
         if l == light {
             min = n + 1;
-            continue;
-        }
-
-        for button in buttons {
-            queue.push_back((n + 1, l, *button));
+        } else {
+            for button in buttons {
+                queue.push_back((n + 1, l, *button));
+            }
         }
     }
 
@@ -63,33 +67,62 @@ fn part1(input: &str) -> usize {
         .sum::<usize>()
 }
 
-fn part2(input: &str) -> i32 {
-    let mut joltages = Vec::new();
-    let mut buttons = Vec::new();
+fn part2(input: &str) -> usize {
+    let mut presses = 0;
 
-    for line in input.lines() {
-        let parts: Vec<&str> = line.split_whitespace().collect();
-        let line_joltage: Vec<usize> = parts
+    for parts in input
+        .lines()
+        .map(|l| l.split_whitespace().collect::<Vec<&str>>())
+    {
+        let mut problem = LpProblem::new("Joltages", LpObjective::Minimize);
+        let mut equations: HashMap<usize, Vec<usize>> = HashMap::new();
+        let mut buttons = Vec::new();
+        let joltages: Vec<i32> = parts
             .last()
             .unwrap()
             .split(&['{', '}', ','])
-            .filter_map(|s| s.parse::<usize>().ok())
+            .filter_map(|s| s.parse::<i32>().ok())
             .collect();
-        joltages.push(line_joltage);
 
-        buttons.push(Vec::new());
-        let i = buttons.len() - 1;
-        for button in parts.iter().take(parts.len() - 1).skip(1) {
-            let b = button
+        for (i, button) in parts.iter().take(parts.len() - 1).skip(1).enumerate() {
+            buttons.push(LpInteger::new(&format!("b{}", i + 1)));
+            problem += buttons.last().unwrap().ge(0);
+
+            for n in button
                 .split(&['(', ')', ','])
-                .filter_map(|s| s.parse::<u64>().ok())
-                .map(|n| 1 << n)
-                .sum::<u64>();
-            buttons[i].push(b);
+                .filter_map(|s| s.parse::<usize>().ok())
+            {
+                equations
+                    .entry(n)
+                    .and_modify(|e| e.push(i))
+                    .or_insert(vec![i]);
+            }
+        }
+
+        problem += buttons
+            .iter()
+            .skip(2)
+            .fold(&buttons[0] + &buttons[1], |expr, b| expr + b);
+
+        for (i, j) in joltages.iter().enumerate() {
+            problem += sum(equations.get(&i).unwrap(), |&b| &buttons[b]).equal(*j);
+        }
+
+        // crate expects the binary "cbc", but the fedora package provides a binary
+        // called "Cbc".
+        let solver = CbcSolver::new().command_name(String::from("Cbc"));
+        match solver.run(&problem) {
+            Ok(solution) => {
+                presses += solution.results.values().sum::<f32>() as usize;
+            }
+            Err(msg) => {
+                println!("{}", msg);
+                return 0;
+            }
         }
     }
 
-    0
+    presses
 }
 
 pub fn run(benchmark: bool) -> io::Result<()> {

@@ -12,7 +12,7 @@ fn part2(input: &str) -> i32 {
 }
 
 pub fn run(benchmark: bool) -> io::Result<()> {
-    let input = fs::read_to_string("inputs/20XX/dayYY.txt");
+    let input = fs::read_to_string("inputs/20XX/dayYY_example.txt");
 
     if let Err(e) = input {
         if e.kind() == io::ErrorKind::NotFound {

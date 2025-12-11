@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
-use reqwest::header::{HeaderValue, COOKIE};
 use reqwest::Client;
+use reqwest::header::{COOKIE, HeaderValue};
 use std::fs::{self, File};
 use std::io::Write;
 use std::io::{self, Read};
@@ -15,6 +15,8 @@ mod year24;
 #[path = "2025/mod.rs"]
 mod year25;
 
+const YEARS: [&str; 4] = ["2022", "2023", "2024", "2025"];
+
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
@@ -27,7 +29,7 @@ enum Commands {
     // Run the solution for <year> <day>. If <day> isn't specified, run all solutions for <year>
     Run {
         // year to run, default to 2024
-        #[arg(short, long, default_value_t = String::from("2025"))]
+        #[arg(short, long, default_value_t = String::from(*YEARS.last().unwrap()))]
         year: String,
         // day to run
         #[arg(short, long)]
@@ -39,7 +41,7 @@ enum Commands {
     // Set up a template file for <year> <day>. Also puts the puzzle input in
     // inputs/<year>/day<day>.txt
     Create {
-        #[arg(short, long)]
+        #[arg(short, long, default_value_t = String::from(*YEARS.last().unwrap()))]
         year: String,
         #[arg(short, long)]
         day: Option<usize>,
@@ -53,18 +55,47 @@ enum Commands {
     },
 }
 
+fn get_year(arg: &str) -> Option<&str> {
+    let years: Vec<&str> = YEARS
+        .iter()
+        .copied()
+        .filter(|y| *y == arg || y.ends_with(arg))
+        .collect();
+
+    if years.len() == 1 {
+        Some(years[0])
+    } else {
+        None
+    }
+}
+
 #[tokio::main]
 async fn main() -> io::Result<()> {
     let args = Args::parse();
-
     match &args.command {
-        Some(Commands::Run { year, day, nobenchmark }) => run(year, *day, !*nobenchmark),
+        Some(Commands::Run {
+            year,
+            day,
+            nobenchmark,
+        }) => {
+            if let Some(y) = get_year(year) {
+                run(y, *day, !*nobenchmark)
+            } else {
+                Err(io::Error::other(format!("Invalid year: {}", year)))
+            }
+        }
         Some(Commands::Create {
             year,
             day,
             session,
             download,
-        }) => create(year, *day, session.clone(), *download).await,
+        }) => {
+            if let Some(y) = get_year(year) {
+                create(y, *day, session.clone(), *download).await
+            } else {
+                Err(io::Error::other(format!("Invalid year: {}", year)))
+            }
+        }
         _ => Ok(()),
     }
 }
@@ -84,18 +115,17 @@ async fn create(
         for i in lower..=upper {
             create_day(year, i)?;
         }
-    }
-
-    if session.is_none() && download {
+    } else if session.is_none() {
         return Err(io::Error::other(
             "Session cookie file (-s option) required for --download option",
         ));
     }
 
-    let key = fs::read_to_string(session.expect("Session cookie file not provided"))
-        .expect("Could not find session cookie file");
-    for i in lower..=upper {
-        download_inputs(&client, &key, year, i).await?;
+    if let Some(file) = session {
+        let key = fs::read_to_string(file).expect("Could not find session cookie file");
+        for i in lower..=upper {
+            download_inputs(&client, &key, year, i).await?;
+        }
     }
 
     Ok(())
@@ -103,6 +133,7 @@ async fn create(
 
 fn create_day(year: &str, day: usize) -> io::Result<()> {
     let path = format!("src/{}/day{}.rs", year, day);
+
     if Path::new(&path).exists() {
         return Ok(());
     }
@@ -133,9 +164,10 @@ async fn download_inputs(client: &Client, key: &str, year: &str, day: usize) -> 
     if let Some(text) = send_request(client, key, &url).await {
         input.write_all(text.as_bytes())?;
     } else {
-        return Err(io::Error::other(
-            format!("Error getting puzzle input for {} day {}", year, day),
-        ));
+        return Err(io::Error::other(format!(
+            "Error getting puzzle input for {} day {}",
+            year, day
+        )));
     }
 
     Ok(())
@@ -166,10 +198,10 @@ async fn send_request(client: &Client, session: &str, url: &str) -> Option<Strin
 
 fn run(year: &str, day: Option<usize>, benchmark: bool) -> io::Result<()> {
     match year {
-        "2022" | "22" => year22::run(day, benchmark),
-        "2023" | "23" => year23::run(day),
-        "2024" | "24" => year24::run(day, benchmark),
-        "2025" | "25" => year25::run(day, benchmark),
+        "2022" => year22::run(day, benchmark),
+        "2023" => year23::run(day),
+        "2024" => year24::run(day, benchmark),
+        "2025" => year25::run(day, benchmark),
         _ => Ok(()),
     }
 }

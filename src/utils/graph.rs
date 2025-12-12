@@ -476,6 +476,67 @@ impl<T> Graph<T> {
 
         paths
     }
+
+    // Returns true when there's a cycle
+    fn topo_helper(
+        &mut self,
+        v: GraphID,
+        marks: &mut Vec<GraphID>,
+        sort: &mut Vec<GraphID>,
+    ) -> bool {
+        if self.vertices.get(&v).unwrap().mark {
+            return false;
+        }
+
+        if marks.contains(&v) {
+            return true;
+        } else {
+            marks.push(v);
+        }
+
+        let vids = self
+            .vertices
+            .get(&v)
+            .unwrap()
+            .edges
+            .iter()
+            .map(|e| e.to)
+            .collect::<Vec<GraphID>>();
+        if vids.into_iter().any(|v| self.topo_helper(v, marks, sort)) {
+            return true;
+        }
+
+        self.vertices.get_mut(&v).unwrap().mark();
+        sort.push(v);
+        false
+    }
+
+    /// Returns a topological sort of vertices in @self if it exists.
+    ///
+    /// WARNING: This function trashes the @mark of the vertices in the graph.
+    pub fn topo_sort(&mut self) -> Option<Vec<GraphID>> {
+        let mut queue = VecDeque::from_iter(self.vertices.keys().copied());
+        let mut sorted = Vec::new();
+
+        for v in self.vertices.values_mut() {
+            v.mark = false;
+        }
+
+        while let Some(id) = queue.pop_back() {
+            if let Some(v) = self.vertices.get(&id) {
+                if v.mark {
+                    continue;
+                }
+
+                if self.topo_helper(v.id, &mut Vec::new(), &mut sorted) {
+                    return None;
+                }
+            }
+        }
+
+        sorted.reverse();
+        Some(sorted)
+    }
 }
 
 /* GRAPH TRAITS */

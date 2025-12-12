@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::fs;
 use std::io;
 
@@ -39,50 +38,62 @@ fn parse_input(input: &str, start: &str) -> (Graph<i64>, (GraphID, GraphID)) {
 
 fn find_paths_helper(
     graph: &Graph<i64>,
+    sort: &[GraphID],
     start: GraphID,
-    _end: GraphID,
-    past: &mut HashMap<GraphID, usize>,
+    end: GraphID,
 ) -> usize {
-    if let Some(count) = past.get(&start) {
-        return *count;
+    let mut counts = vec![0; graph.iter().map(|v| v.get_id()).max().unwrap() + 1];
+    counts[end] = 1;
+
+    for vid in sort
+        .iter()
+        .copied()
+        .rev()
+        .skip_while(|vid| *vid != end)
+        .skip(1)
+        .take_while_inclusive(|vid| *vid != start)
+    {
+        counts[vid] = graph
+            .get_vertex(vid)
+            .unwrap()
+            .iter()
+            .map(|e| counts[e.traverse()])
+            .sum();
     }
 
-    let count = graph
-        .get_vertex(start)
-        .unwrap()
-        .iter()
-        .map(|e| find_paths_helper(graph, e.traverse(), _end, past))
-        .sum();
-    past.insert(start, count);
-    count
+    counts[start]
 }
 
-fn find_paths(graph: &Graph<i64>, nodes: &[GraphID]) -> usize {
+fn find_paths(graph: &mut Graph<i64>, sort: &[GraphID], nodes: &[GraphID]) -> usize {
     nodes
         .iter()
         .tuple_windows()
-        .map(|(start, end)| {
-            let mut map = HashMap::new();
-            map.insert(*end, 1);
-            find_paths_helper(graph, *start, *end, &mut map)
-        })
+        .map(|(start, end)| find_paths_helper(graph, sort, *start, *end))
         .reduce(|acc, e| acc * e)
         .unwrap_or(0)
 }
 
 fn part1(input: &str) -> usize {
-    let (graph, (inid, outid)) = parse_input(input, "you");
+    let (mut graph, (inid, outid)) = parse_input(input, "you");
 
-    find_paths(&graph, &[inid, outid])
+    if let Some(sort) = graph.topo_sort() {
+        find_paths(&mut graph, &sort, &[inid, outid])
+    } else {
+        0
+    }
 }
 
 fn part2(input: &str) -> usize {
-    let (graph, (svrid, outid)) = parse_input(input, "svr");
+    let (mut graph, (svrid, outid)) = parse_input(input, "svr");
     let fftid = graph.find_vertex_by_label("fft").unwrap().get_id();
     let dacid = graph.find_vertex_by_label("dac").unwrap().get_id();
 
-    find_paths(&graph, &[svrid, fftid, dacid, outid])
-        + find_paths(&graph, &[svrid, dacid, fftid, outid])
+    if let Some(sort) = graph.topo_sort() {
+        find_paths(&mut graph, &sort, &[svrid, fftid, dacid, outid])
+            + find_paths(&mut graph, &sort, &[svrid, dacid, fftid, outid])
+    } else {
+        0
+    }
 }
 
 pub fn run(benchmark: bool) -> io::Result<()> {
